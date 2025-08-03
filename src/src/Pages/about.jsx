@@ -1,6 +1,8 @@
+import React from "react"
 import AboutImg from "../assets/images/About-page/about-image.png"
 import mind from "../assets/icons/About-page/mind.png"
 import voice from "../assets/icons/About-page/voice.png"
+
 export default function About(){
   return(
     <article className = "mt-6">

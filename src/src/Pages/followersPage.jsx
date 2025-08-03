@@ -1,3 +1,4 @@
+import React from "react"
 const followers = [
   { name: "Vicky Lyn", img: "vicky.jpg", followBack: false },
   { name: "Hufa Ann", img: "hufa.jpg", followBack: true },

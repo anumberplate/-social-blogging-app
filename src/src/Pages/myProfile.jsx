@@ -1,3 +1,4 @@
+import React from "react"
 import profilePic from "../assets/images/MyProfilepage/profile-img.png"
 export default function MyProfile(){
   return(

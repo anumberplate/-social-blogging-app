@@ -1,5 +1,6 @@
+import React from "react"
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import companyLogo from "../assets/icons/Navbar/company-logo.png";
 import homeIcon from "../assets/icons/Navbar/home-icon.png";
 import infoIcon from "../assets/icons/Navbar/info-icon.png";
@@ -9,36 +10,55 @@ import magnifyImage from "../assets/icons/Navbar/magnifying-glass.png";
 export default function Navbar() {
   const [dark, setDark] = useState(false);
 
+  useEffect(() => {
+  const storedTheme = localStorage.getItem('theme');
+  if (storedTheme === 'dark') {
+    document.documentElement.classList.add('dark');
+    setDark(true);
+  }
+  }, []);
+
   const toggleDark = () => {
-    setDark(!dark);
-    document.documentElement.classList.toggle("dark", !dark);
+    const newTheme = !dark;
+    setDark(newTheme);
+    document.documentElement.classList.toggle('dark', newTheme);
+    localStorage.setItem('theme', newTheme ? 'dark' : 'light');
   };
 
+
   return (
-    <header className="font-inter w-full shadow-sm bg-white dark:bg-gray-900 dark:text-white">
-      <nav className="sticky w-full p-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <header className="fixed top-0 font-inter w-full shadow-sm bg-white dark:bg-gray-900 dark:text-white">
+      <nav className="w-full px-4 py-3 flex items-center justify-between gap-4 font-inter flex-nowrap">
         {/* Logo + Brand */}
-        <div className="flex items-center gap-2 mb-2 sm:mb-0">
+        <div className="flex items-center gap-3 min-w-0">
           <img src={companyLogo} alt="logo" className="w-10 h-10" />
-          <h1 className="font-bold text-xl whitespace-nowrap">Creative Corner</h1>
+          <h1 className="text-xl font-bold whitespace-nowrap">Creative Corner</h1>
         </div>
 
-        {/* Right-side icons */}
-        <div className="flex items-center gap-4 flex-wrap justify-center">
-          <Link to="/">
-            <img src={homeIcon} alt="Home" className="w-6 h-6 sm:w-8 sm:h-8" />
+        {/* Icons and theme toggle */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <Link to="/" className="hover:scale-105 transition">
+            <img src={homeIcon} alt="Home" className="w-6 h-6 sm:w-7 sm:h-7" />
           </Link>
-          <Link to="/Signup">
-            <img src={infoIcon} alt="Info" className="w-6 h-6 sm:w-8 sm:h-8" />
+
+          <Link to="/Signup" className="hover:scale-105 transition">
+            <img src={infoIcon} alt="Info" className="w-6 h-6 sm:w-7 sm:h-7" />
           </Link>
-          <Link to="/profile">
-            <img src={userIcon} alt="User" className="w-6 h-6 sm:w-8 sm:h-8" />
+
+          <Link to="/profile" className="hover:scale-105 transition">
+            <img src={userIcon} alt="User" className="w-6 h-6 sm:w-7 sm:h-7" />
           </Link>
-          <button onClick={toggleDark} className="text-xl">
+
+          <button
+            onClick={toggleDark}
+            className="text-xl hover:scale-110 transition-transform"
+            title="Toggle Theme"
+          >
             {dark ? "🌙" : "☀️"}
           </button>
         </div>
       </nav>
+
 
       {/* Search Section */}
       <section className="flex items-center gap-4 px-4 pb-4 sm:px-6">

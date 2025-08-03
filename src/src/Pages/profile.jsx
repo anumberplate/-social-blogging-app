@@ -1,3 +1,4 @@
+import React from "react"
 import ProfileIcon from "../assets/icons/ProfilePage/profile-icon.png"
 export default function Profile(){
  return(
