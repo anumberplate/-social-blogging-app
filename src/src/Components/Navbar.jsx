@@ -1,3 +1,4 @@
+import axios from "axios"
 import React from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -14,6 +15,19 @@ export default function Navbar() {
   const [dark, setDark] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const toggleMenu = () => setMenuOpen(!menuOpen);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    axios
+      .get("/api/auth/user", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setUser(res.data.user))
+      .catch(() => setUser(null)); // Invalid token
+  }, []);
 
   useEffect(() => {
   const storedTheme = localStorage.getItem('theme');
@@ -29,7 +43,7 @@ export default function Navbar() {
     document.documentElement.classList.toggle('dark', newTheme);
     localStorage.setItem('theme', newTheme ? 'dark' : 'light');
   };
-
+ 
 
   return (
     <header className="fixed top-0 font-inter w-full shadow-sm bg-white dark:bg-gray-900 dark:text-white">
@@ -39,8 +53,8 @@ export default function Navbar() {
           <img src={companyLogo} alt="logo" className="hidden md:block w-10 h-10" />
           <h1 className="text-xl font-bold whitespace-nowrap md:hidden">Creative Corner</h1>
         </div>
-        <h1 className="hidden md:block text-3xl font-bold whitespace-nowrap">Creative Corner</h1>
-
+        <h1 className="hidden md:block text-3xl text-center font-bold whitespace-nowrap">Creative Corner</h1>
+      
         <button onClick={toggleMenu} className="md:hidden text-2xl text-gray-800 md:ml-64 md:mr-0 md:pr-0 dark:text-white">
           <FontAwesomeIcon icon={menuOpen ? faXmark : faBars} className= "p-0 m-0"/>
         </button>
@@ -66,6 +80,18 @@ export default function Navbar() {
           >
             {dark ? "🌙" : "☀️"}
           </button>
+          <div className="flex gap-4">
+            {user ? (
+              <Link to="/dashboard">
+                <img src="/profile-icon.png" alt="profile" className="w-6 h-6" />
+              </Link>
+            ) : (
+              <>
+                <Link to="/signup">Sign Up</Link>
+                <Link to="/login">Login</Link>
+              </>
+            )}
+        </div>
         </div>
       </nav>
 

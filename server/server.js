@@ -3,6 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
 const postRoutes = require('./routes/postRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 app.use(cors());
@@ -14,7 +15,7 @@ app.get("/", (req, res) => {
   res.send("API is running");
 });
 
-const authRoutes = require('./routes/authRoutes');
+
 app.use('/api/auth', authRoutes);
 
 mongoose.connect(process.env.MONGO_URI)

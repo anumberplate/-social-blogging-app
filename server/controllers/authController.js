@@ -6,6 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 exports.signup = async (req, res) => {
   const { username, email, password } = req.body;
+  console.log("Signup body received:", req.body);
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser)
@@ -18,8 +19,9 @@ exports.signup = async (req, res) => {
       email,
       password: hashedPassword,
     });
+    const token = jwt.sign({ id: newUser._id }, JWT_SECRET, { expiresIn: '1d' });
 
-    res.status(201).json({ message: 'User created successfully' });
+    res.status(201).json({ message: 'User created successfully', token });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

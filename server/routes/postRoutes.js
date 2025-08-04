@@ -1,6 +1,7 @@
 const express = require('express');
 const { getPaginatedPosts } = require('../controllers/postController');
 const router = express.Router();
+const auth = require('../middleware/authMiddleware');
 
 const {
   createPost,
