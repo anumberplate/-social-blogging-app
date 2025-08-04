@@ -8,6 +8,8 @@ import MyProfile from "./Pages/myProfile"
 import FollowersPage from "./Pages/followersPage"
 import Following from "./Pages/following"
 import Notifications from './Pages/Notifications'
+import RecentPosts from './Pages/recentPosts'
+import Logout from './Pages/logout'
 
 import Layout from "./Layout"
 
@@ -20,10 +22,12 @@ export default function App(){
           <Route path = '/signup' element = {<Signup />}/>
           <Route path = '/profile' element = {<Profile />}/>
           <Route path = '/about' element = {<About />}/>
+          <Route path = '/recentposts' element = {<RecentPosts />}/>
           <Route path = '/myProfile' element = {<MyProfile />}/>
           <Route path = '/followersPage' element = {<FollowersPage />}/>
           <Route path = '/following' element = {<Following />}/>
           <Route path = '/notification' element = {<Notifications />}/>
+          <Route path = '/logout' element = {<Logout />}/>
         </Route>
       </Routes>
     </Router>

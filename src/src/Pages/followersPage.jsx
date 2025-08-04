@@ -10,7 +10,7 @@ const followers = [
 
 export default function FollowersList() {
   return (
-    <section className="max-w-md mx-auto p-4">
+    <section className="max-w-md mx-auto p-4 mt-36 pt-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="font-bold text-xl">Followers</h2>
         <div className="flex gap-12 text-sm font-semibold text-gray-600">
@@ -21,7 +21,7 @@ export default function FollowersList() {
 
       <ul className="space-y-4">
         {followers.map((follower, idx) => (
-          <li key={idx} className="flex items-center justify-between">
+          <li key={idx} className="flex py-4 items-center justify-between">
             {/* Left: Profile Info */}
             <div className="flex items-center gap-4">
               <img

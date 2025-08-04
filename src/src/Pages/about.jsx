@@ -5,8 +5,8 @@ import voice from "../assets/icons/About-page/voice.png"
 
 export default function About(){
   return(
-    <article className = "mt-6">
-      <h2 className="font-bold text-2xl font-inter text-center mb-4 text-[#36C5D1] ">
+    <article className = "mt-36 pt-12 bg-[#FAF5F5] md:bg-white min-h-screen md:px-32 md:text-xl ">
+      <h2 className="font-bold text-2xl font-inter text-center mb-4 text-[#36C5D1]  ">
         <span className = "whitespace-nowrap">ABOUT </span>
         <span className = "whitespace-nowrap">CREATIVE CORNER</span>
       </h2>
@@ -17,8 +17,8 @@ export default function About(){
         , stories grow, and
         art connects us.
       </p>
-      <div className = "px-10 mb-6 ">
-        <img src={AboutImg} alt="" className = "w-full h-full object-cover border rounded-3xl"/>
+      <div className = "px-10 mb-6 md:h-64 ">
+        <img src={AboutImg} alt="" className = "w-full h-full object-cover border rounded-3xl" style={{ boxShadow: "0 6px 4px 0 #0A8F9A" }}/>
       </div>
       <p className = "px-10 text-center mb-6">
         Creative Corner is a blog platform

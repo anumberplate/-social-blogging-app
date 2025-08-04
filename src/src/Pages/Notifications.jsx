@@ -25,22 +25,23 @@ const notifications = [
 
 export default function Notifications() {
   return (
-    <section className="max-w-md mx-auto p-4 bg-white">
+    <section className=" mt-36 py-4 max-w-md mx-auto p-4 bg-white">
       {/* Header */}
-      <div className="text-center mb-4">
-        <h2 className="font-bold text-xl">Notifications</h2>
-        <a href="#" className="text-sm text-blue-600 underline">
-          Don’t miss out on any news.
-        </a>
-        <div className="text-2xl mt-2">🔔</div>
+      <div className="flex flex-row justify-center gap-10 mb-4">
+        <div className="text-center mb-4">
+          <h2 className="font-bold text-xl">Notifications</h2>
+          <a href="#" className="text-sm text-blue-600 underline">
+            Don’t miss out on any news.
+          </a>
+        </div>
+        <div className="text-2xl -mr-14">🔔</div>
       </div>
-
       {/* Notification Cards */}
       <ul className="space-y-4">
         {notifications.map((item, index) => (
           <li
             key={index}
-            className="flex items-center justify-between bg-white shadow-sm border rounded-md p-2"
+            className="flex items-center justify-between bg-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.4)] border rounded-md p-2"
           >
             {/* Left image or icon */}
             <img
