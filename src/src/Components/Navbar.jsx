@@ -26,7 +26,7 @@ export default function Navbar() {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setUser(res.data.user))
-      .catch(() => setUser(null)); // Invalid token
+      .catch(() => setUser(null)); 
   }, []);
 
   useEffect(() => {
