@@ -144,8 +144,6 @@ trend_hunter_agent = Agent(
     backstory="An AI expert in real-time trend spotting and blogging",
     verbose=True,
     allow_delegation=False,
-    llm="gemini/gemini-1.5-flash",  # ✅ LiteLLM-compatible model name
+    llm="gemini/gemini-1.5-flash",
     tools=[get_current_trends, generate_draft, edit_draft, summarize_post],
 )
-
-# You can now use `trend_hunter_agent` in your Crew setup.

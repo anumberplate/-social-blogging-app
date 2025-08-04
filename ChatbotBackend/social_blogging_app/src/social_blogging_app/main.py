@@ -3,8 +3,7 @@ import uvicorn
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from crewai import Crew, Process
-from crewai_tools import SerperDevTool
-from src.social_blogging_app.agents import SocialBloggingAgents
+from crewai_tools import SerperDevToolfrom src.social_blogging_app.agents import SocialBloggingAgents
 from src.social_blogging_app.tools.custom_tool import get_llm, get_current_trends, generate_draft, edit_draft, summarize_post
 from dotenv import load_dotenv
 
