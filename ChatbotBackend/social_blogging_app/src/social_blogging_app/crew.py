@@ -1,64 +1,120 @@
+# src/social_blogging_ai/crew.py
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
-# If you want to run a snippet of code before or after the crew starts,
-# you can use the @before_kickoff and @after_kickoff decorators
-# https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
+from crewai.agents.agent_builder.base_agent import BaseAgent
+import sys
+import os
+
+# Add path for local imports
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
+
+from utils.llm_factory import get_llm_model_name
+llm_model_name = get_llm_model_name()
+
+from .tools.custom_tool import (
+    get_current_trends,
+    generate_draft,
+    edit_draft,
+    summarize_post
+)
 
 @CrewBase
-class SocialBloggingApp():
-    """SocialBloggingApp crew"""
+class SocialBloggingAi():
+    """SocialBloggingAi crew"""
 
     agents: List[BaseAgent]
     tasks: List[Task]
 
-    # Learn more about YAML configuration files here:
-    # Agents: https://docs.crewai.com/concepts/agents#yaml-configuration-recommended
-    # Tasks: https://docs.crewai.com/concepts/tasks#yaml-configuration-recommended
+    @agent
+    def trend_hunter(self) -> Agent:
+        return Agent(
+            config=self.agents_config['trend_hunter'], 
+            tools=[get_current_trends],
+            llm=llm_model_name,
+            verbose=True
+        )
     
-    # If you would like to add tools to your agents, you can learn more about it here:
-    # https://docs.crewai.com/concepts/agents#agent-tools
     @agent
-    def researcher(self) -> Agent:
+    def content_writer(self) -> Agent:
         return Agent(
-            config=self.agents_config['researcher'], # type: ignore[index]
+            config=self.agents_config['content_writer'],
+            tools=[generate_draft],
+            llm=llm_model_name,
             verbose=True
         )
 
     @agent
-    def reporting_analyst(self) -> Agent:
+    def editor(self) -> Agent:
         return Agent(
-            config=self.agents_config['reporting_analyst'], # type: ignore[index]
+            config=self.agents_config['editor'],
+            tools=[edit_draft],
+            llm=llm_model_name,
             verbose=True
         )
 
-    # To learn more about structured task outputs,
-    # task dependencies, and task callbacks, check out the documentation:
-    # https://docs.crewai.com/concepts/tasks#overview-of-a-task
-    @task
-    def research_task(self) -> Task:
-        return Task(
-            config=self.tasks_config['research_task'], # type: ignore[index]
+    @agent
+    def summarizer(self) -> Agent:
+        return Agent(
+            config=self.agents_config['summarizer'],
+            tools=[summarize_post],
+            llm=llm_model_name,
+            verbose=True
         )
 
     @task
-    def reporting_task(self) -> Task:
+    def trend_research(self) -> Task:
         return Task(
-            config=self.tasks_config['reporting_task'], # type: ignore[index]
-            output_file='report.md'
+            config=self.tasks_config['trend_research'],
+            agent=self.trend_hunter(),
+            output_file='trend_report.txt'
+        )
+
+    @task
+    def content_generation(self) -> Task:
+        return Task(
+            config=self.tasks_config['content_generation'],
+            agent=self.content_writer(),
+            context=[self.trend_research()]
+        )
+
+    @task
+    def blog_editing(self) -> Task:
+        return Task(
+            config=self.tasks_config['blog_editing'],
+            agent=self.editor(),
+            context=[self.content_generation()]
+        )
+
+    @task
+    def content_summarization(self) -> Task:
+        return Task(
+            config=self.tasks_config['content_summarization'],
+            agent=self.summarizer(),
+            context=[self.blog_editing()],
+            output_file='final_blog_summary.txt'
         )
 
     @crew
     def crew(self) -> Crew:
-        """Creates the SocialBloggingApp crew"""
-        # To learn how to add knowledge sources to your crew, check out the documentation:
-        # https://docs.crewai.com/concepts/knowledge#what-is-knowledge
+        """Creates the SocialBloggingAi crew from the specified agents and tasks"""
+        self.agents = [
+            self.trend_hunter(), 
+            self.content_writer(), 
+            self.editor(), 
+            self.summarizer()
+        ]
+        self.tasks = [
+            self.trend_research(),
+            self.content_generation(),
+            self.blog_editing(),
+            self.content_summarization()
+        ]
 
         return Crew(
-            agents=self.agents, # Automatically created by the @agent decorator
-            tasks=self.tasks, # Automatically created by the @task decorator
+            agents=self.agents,
+            tasks=self.tasks,
             process=Process.sequential,
             verbose=True,
-            # process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
         )
