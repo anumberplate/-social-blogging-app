@@ -8,7 +8,6 @@ import React from "react";
 
 import Home from "./Pages/home";
 import Signup from "./Pages/Signup";
-import Profile from "./Pages/Dashboard";
 import About from "./Pages/about";
 import MyProfile from "./Pages/myProfile";
 import FollowersPage from "./Pages/followersPage";
@@ -18,7 +17,7 @@ import RecentPosts from './Pages/recentPosts';
 import Logout from './Pages/logout';
 import Dashboard from './Pages/Dashboard';           
 import CreatePost from './Pages/CreatePost';         
-import ProtectedRoute from "./components/ProtectedRoute"; 
+import ProtectedRoute from "./Components/ProtectedRoute"; 
 import Layout from "./Layout";
 import Login from "./Pages/login";
 
