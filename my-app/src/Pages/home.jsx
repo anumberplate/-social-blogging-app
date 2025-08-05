@@ -79,23 +79,23 @@ export default function Home() {
                   <img src={post.userprofilephoto} alt="Post" className="w-full h-full object-cover" />
                 </div>
                 <div className="px-4">
-                  <h3 className="font-bold font-martel mt-4 mb-4 text-[1rem] md:text-[1.6rem] dark:text-white">{post.title}</h3>
-                  <p className="mb-4 text-[0.8rem] md:text-xl dark:text-gray-300">{post.content}</p>
+                  <h3 className="font-bold font-martel mt-4 mb-4 text-[1rem] md:text-[1.2rem] dark:text-white">{post.title}</h3>
+                  <p className="mb-4 text-[0.8rem] md:text-[0.8rem] dark:text-gray-300">{post.content}</p>
                   <div className="flex flex-row gap-4 mb-12">
-                    <button className="bg-transparent md:text-3xl">
+                    <button className="bg-transparent md:text-2xl">
                       <FontAwesomeIcon icon={faHeartRegular} className="cursor-pointer hover:text-red-500" />
                     </button>
-                    <button className="bg-transparent md:text-3xl">
+                    <button className="bg-transparent md:text-2xl">
                       <FontAwesomeIcon icon={faCommentRegular} className="cursor-pointer hover:text-blue-500" />
                     </button>
-                    <button className="bg-transparent md:text-3xl">
+                    <button className="bg-transparent md:text-2xl">
                       <FontAwesomeIcon icon={faShare} className="cursor-pointer hover:text-green-500" />
                     </button>
                   </div>
                 </div>
               </div>
 
-              <div className="flex justify-between items-center px-4 mb-2 font-bold text-[0.8rem] md:text-xl dark:text-white">
+              <div className="flex justify-between items-center px-4 mb-2 font-bold text-[0.8rem] md:text-[1rem] dark:text-white">
                 <h3>{post.likes} Likes</h3>
                 <h2><a href="#">Show Less</a></h2>
               </div>
@@ -111,11 +111,11 @@ export default function Home() {
                           </div>
                         </div>
                         <div>
-                          <h4 className="font-bold mb-1 text-sm md:text-xl dark:text-white">{comment.username}</h4>
-                          <p className="dark:text-gray-300 md:text-xl">{comment.content}</p>
+                          <h4 className="font-bold mb-1 text-sm md:text-[0.9rem] dark:text-white">{comment.username}</h4>
+                          <p className="dark:text-gray-300 md:text-[0.9rem]">{comment.content}</p>
                           <div className="flex justify-between text-sm font-bold mt-1">
-                            <p className="text-[0.7rem] md:text-xl">{comment.hours} hours ago</p>
-                            <p className="text-[0.7rem] md:text-xl">{comment.likes} likes</p>
+                            <p className="text-[0.7rem] md:text-[0.9rem]">{comment.hours} hours ago</p>
+                            <p className="text-[0.7rem] md:text-[0.9rem]">{comment.likes} likes</p>
                             <button className="hover:underline text-[0.7rem] md:text-xl">Reply</button>
                           </div>
                           {comment.replies && <button className="text-sm text-gray-600 mt-1">View all replies</button>}
