@@ -1,33 +1,26 @@
 import axios from "axios"
 import React from "react"
+import { faSun, faMoon } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useAuth } from '../context/AuthContext';
 import companyLogo from "../assets/icons/Navbar/company-logo.png";
 import homeIcon from "../assets/icons/Navbar/home-icon.png";
 import infoIcon from "../assets/icons/Navbar/info-icon.png";
 import userIcon from "../assets/icons/Navbar/user-icon.png";
 import magnifyImage from "../assets/icons/Navbar/magnifying-glass.png";
+import { useSidebar } from '../context/SidebarContext';
 
 
 export default function Navbar() {
   const [dark, setDark] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const toggleMenu = () => setMenuOpen(!menuOpen);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    axios
-      .get("/api/auth/user", {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => setUser(res.data.user))
-      .catch(() => setUser(null)); 
-  }, []);
+  const { toggleSidebar } = useSidebar();
+  
+  const { user } = useAuth();
 
   useEffect(() => {
   const storedTheme = localStorage.getItem('theme');
@@ -43,77 +36,119 @@ export default function Navbar() {
     document.documentElement.classList.toggle('dark', newTheme);
     localStorage.setItem('theme', newTheme ? 'dark' : 'light');
   };
+  const location = useLocation()
+  const [navLayout, setNavLayout] = useState("default")
  
+  useEffect(() => {
+    if (location.pathname === "/") {
+      setNavLayout("home")
+    } else if (location.pathname.startsWith("/home")) {
+      setNavLayout("home")
+    } else {
+      setNavLayout()
+    }
+  })
 
+  const navigate = useNavigate()
+
+  const [hideSearchSection, setHideSearchSection] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (location.pathname.startsWith("/home") || location.pathname === "/") {
+        if (window.scrollY > 10 ) {
+          setHideSearchSection(true)
+        } else {
+          setHideSearchSection(false)
+        }
+      } else {
+        setHideSearchSection(true)
+      }
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  })
+  
   return (
-    <header className="fixed top-0 font-inter w-full shadow-sm bg-white dark:bg-gray-900 dark:text-white">
-      <nav className="w-full px-4 pt-3 pb-8 mb-2 flex items-center justify-between gap-4 font-inter flex-nowrap md:mb-4 border-b-4 border-b-[#36C5D1] md:border-none md:py-3">
-        {/* Logo + Brand */}
-        <div className="flex items-center gap-3 min-w-0 ">
-          <img src={companyLogo} alt="logo" className="hidden md:block w-10 h-10" />
-          <h1 className="text-xl font-bold whitespace-nowrap md:hidden">Creative Corner</h1>
-        </div>
-        <h1 className="hidden md:block text-3xl text-center font-bold whitespace-nowrap">Creative Corner</h1>
-      
-        <button onClick={toggleMenu} className="md:hidden text-2xl text-gray-800 md:ml-64 md:mr-0 md:pr-0 dark:text-white">
-          <FontAwesomeIcon icon={menuOpen ? faXmark : faBars} className= "p-0 m-0"/>
-        </button>
-
+    <header className={`fixed top-0 font-inter w-full shadow-none bg-[#FAF5F5] dark:bg-[#374151] dark:pb-6 dark:text-white z-10 pb-10 ${hideSearchSection ? 'h-24': 'h-auto'}`}>
+      <nav className="w-full px-2 py-4 md:px-4 bg-white dark:bg-[#374151] md:py-8 flex items-center justify-between font-inter border-b-4 border-b-[#36C5D1] mb-4 md:mb-16">
+        <h1 className="text-xl font-bold whitespace-nowrap md:text-4xl md:pl-4">Creative Corner</h1>
         {/* Icons and theme toggle */}
-        <div className="hidden md:flex items-center gap-2 flex-shrink-0">
-          <Link to="/" className="hover:scale-105 transition">
-            <img src={homeIcon} alt="Home" className="w-6 h-6 sm:w-7 sm:h-7" />
-          </Link>
-
-          <Link to="/Signup" className="hover:scale-105 transition">
-            <img src={infoIcon} alt="Info" className="w-6 h-6 sm:w-7 sm:h-7" />
-          </Link>
-
-          <Link to="/profile" className="hover:scale-105 transition">
-            <img src={userIcon} alt="User" className="w-6 h-6 sm:w-7 sm:h-7" />
-          </Link>
-
-          <button
-            onClick={toggleDark}
-            className="text-xl hover:scale-110 transition-transform"
-            title="Toggle Theme"
-          >
-            {dark ? "🌙" : "☀️"}
-          </button>
-          <div className="flex gap-4">
+        <div className="hidden md:flex flex-row items-center gap-2">  
             {user ? (
-              <Link to="/dashboard">
-                <img src="/profile-icon.png" alt="profile" className="w-6 h-6" />
-              </Link>
+              <div className="flex flex-row items-center">
+                <Link to="/dashboard">
+                  <img src="/profile-icon.png" alt="profile" className="w-6 h-6 mr-16" />
+                </Link>
+                <button onClick={toggleDark} className="flex justify-center items-center text-2xl text-black-500 mr-16 dark:text-white">
+                    <FontAwesomeIcon icon={faSun} className="block dark:hidden" />
+                    <FontAwesomeIcon icon={faMoon} className="hidden dark:block" />
+                </button>
+                <button onClick={toggleSidebar} className="text-2xl text-gray-800 md:mr-0 md:pr-0 dark:text-white">
+                    <FontAwesomeIcon icon={menuOpen ? faXmark : faBars} className= "p-0 m-0"/>
+                </button>
+              </div>
             ) : (
-              <>
-                <Link to="/signup">Sign Up</Link>
-                <Link to="/login">Login</Link>
-              </>
+              <div className="flex flex-row items-center">
+                <Link to="/signup">
+                  <div className="inline-block mr-14 rounded-lg p-[2px] bg-gradient-to-r from-[#36C5D1] to-[#A82ED3]">
+                    <button className="bg-white dark:bg-[#1e1e1e] text-black dark:text-white rounded-lg px-16 py-2 w-full h-full font-semibold">
+                      Sign Up
+                    </button>
+                  </div>
+                </Link>
+                <button onClick={toggleDark} className="text-2xl flex justify-center items-center text-black-500 mr-8 dark:text-white">
+                  <FontAwesomeIcon icon={faSun} className="block dark:hidden" />
+                  <FontAwesomeIcon icon={faMoon} className="hidden dark:block" />
+                </button>
+                <button onClick={toggleMenu} className="text-2xl text-gray-800 md:mr-0 md:pr-0 dark:text-white">
+                  <FontAwesomeIcon icon={menuOpen ? faXmark : faBars} className= "p-0 m-0"/>
+                </button>
+              </div>
             )}
-        </div>
+          
         </div>
       </nav>
 
 
       {/* Search Section */}
-      <section className="flex items-center gap-4 px-4 pb-4 sm:px-6 md:flex flex-row justify-center">
-        <button onClick={toggleMenu} className="text-2xl text-gray-800 md:ml-64 md:mr-0 md:pr-0 dark:text-white">
-          <FontAwesomeIcon icon={menuOpen ? faXmark : faBars} className= "p-0 m-0"/>
-        </button>
+      {
+      navLayout === "home" && (
+            <section
+              className={`
+                px-6 bg-[#FAF5F5] shadow-none border-none md:px-64 dark:bg-[#374151]
+                transition-all duration-30 ease-in-out
+                ${hideSearchSection ? 'opacity-0 -translate-y-6 pointer-events-none' : 'opacity-100 translate-y-0'}
+              `}
+                  >
+                <div className="relative w-full mb-6">
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    className="w-full pl-4 pr-10 py-2 border-2 border-solid rounded-2xl md:py-4 dark:bg-gray-800"
+                    style={{ borderColor: '#A82ED3' }}
+                  />
+                  <button className="absolute right-3 md:-right-2 lg:right-6 top-1/2 -translate-y-1/2">
+                    <img src={magnifyImage} alt="search" className="w-4 h-4" />
+                  </button>
+                </div>
 
-        <div className="relative w-full md:pr-24 lg:pr-64">
-          <input
-            type="text"
-            placeholder="Search"
-            className="w-full pl-4 pr-10 py-2 border-2 border-solid rounded-2xl drop-shadow-md md:py-4 dark:bg-gray-800"
-            style={{ boxShadow: "0 4px 6px 4px #C6F7D3" }}
-          />
-          <button className="absolute right-3 md:-right-[-120px] lg:-right-[-280px] top-1/2 -translate-y-1/2">
-            <img src={magnifyImage} alt="search" className="w-4 h-4" />
-          </button>
-        </div>
-      </section>
+                <div className="flex flex-row justify-center gap-x-1 w-full md:gap-x-6">
+                  {['Trending', 'Games', 'Hot topics', 'Action', 'Explore', 'Kids'].map((label, i) => (
+                    <button
+                      key={i}
+                      className="bg-white dark:text-white dark:bg-[#374151] border-[#A82ED3] border-2 py-1 px-1 text-[0.7rem] md:text-[1rem] md:py-2 md:px-4 rounded-2xl"
+                      onClick={() => navigate(`/home/${label.toLowerCase().replace(/\s/g, '')}`)}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+            </section>
+        ) 
+      }
     </header>
+    
+    
   );
 }

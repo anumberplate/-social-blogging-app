@@ -3,15 +3,13 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-export default function Signup() {
+export default function Login() {
   const navigate = useNavigate();
   const { refreshUser } = useAuth();
 
   const [form, setForm] = useState({
-    fullName: "",
     email: "",
     password: "",
-    cpassword: "",
   });
 
   const handleChange = (e) => {
@@ -21,55 +19,33 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (form.password !== form.cpassword) {
-      alert("Passwords do not match");
-      return;
-    }
-
     try {
-      const res = await axios.post("/api/auth/signup", {
-        username: form.fullName,
+      const res = await axios.post("/api/auth/login", {
         email: form.email,
         password: form.password,
       });
 
       localStorage.setItem("token", res.data.token);
 
-      // fetch user info from /api/auth/me and set in context
+      // Fetch user info from /api/auth/me and set in context
       await refreshUser();
 
       navigate("/home");
     } catch (err) {
-      console.error("Signup error:", err);
-      const message = err.response?.data?.message || err.message || "Signup failed";
+      console.error("Login error:", err);
+      const message = err.response?.data?.message || err.message || "Login failed";
       alert(message);
     }
   };
 
   return (
-    <article className="mt-48">
+    <article className="mt-48 z-200">
       <h2 className="whitespace-nowrap font-bold text-center text-2xl mb-10">
-        CREATE YOUR ACCOUNT
+        SIGN IN TO YOUR ACCOUNT
       </h2>
 
-      <form onSubmit={handleSubmit} className="flex flex-col px-10 md:px-56">
+      <form onSubmit={handleSubmit} className=" flex flex-col px-10 md:px-56">
         <fieldset>
-          <label htmlFor="fullName" className="font-bold dark:text-white">
-            Full name
-          </label>
-          <input
-            type="text"
-            placeholder="Full name"
-            name="fullName"
-            id="fullName"
-            value={form.fullName}
-            onChange={handleChange}
-            style={{ boxShadow: "0 4px 4px 0 #0A8F9A" }}
-            className="pl-4 py-2 pr-4 bg-[#F5F5F5] w-full border-solid rounded-2xl border-2 mb-8"
-            autoComplete="name"
-            required
-          />
-
           <label htmlFor="email" className="font-bold dark:text-white">
             Email Address
           </label>
@@ -98,23 +74,7 @@ export default function Signup() {
             onChange={handleChange}
             style={{ boxShadow: "0 4px 4px 0 #0A8F9A" }}
             className="pl-4 py-2 pr-4 w-full bg-[#F5F5F5] border-solid rounded-2xl border-2 mb-8"
-            autoComplete="new-password"
-            required
-          />
-
-          <label htmlFor="cpassword" className="font-bold dark:text-white">
-            Confirm password
-          </label>
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            name="cpassword"
-            id="cpassword"
-            value={form.cpassword}
-            onChange={handleChange}
-            style={{ boxShadow: "0 4px 4px 0 #0A8F9A" }}
-            className="pl-4 py-2 pr-4 w-full bg-[#F5F5F5] border-solid rounded-2xl border-2 mb-8"
-            autoComplete="new-password"
+            autoComplete="current-password"
             required
           />
         </fieldset>
@@ -124,12 +84,12 @@ export default function Signup() {
             type="submit"
             className="font-bold mb-3 p-3 px-9 bg-[#0A8F9A] text-black rounded-3xl mx-auto"
           >
-            SIGN UP
+            SIGN IN
           </button>
           <p className="text-center">
-            Already have an account?{" "}
-            <span className="text-[#0A8F9A] cursor-pointer" onClick={() => navigate("/login")}>
-              sign in
+            Don't have an account?{" "}
+            <span className="text-[#0A8F9A] cursor-pointer" onClick={() => navigate("/signup")}>
+              sign up
             </span>
           </p>
         </div>
