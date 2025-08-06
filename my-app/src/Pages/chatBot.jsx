@@ -36,7 +36,7 @@ export default function ChatBotUI() {
   };
 
   return (
-    <div className="flex h-screen w-full bg-white text-black">
+    <div className="flex h-screen w-full bg-white text-black m42t-">
       {/* Sidebar */}
       <aside className="w-60 border-r p-4 flex flex-col justify-between">
         <div>

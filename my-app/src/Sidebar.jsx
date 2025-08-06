@@ -19,7 +19,7 @@ const Sidebar = () => {
       <ul className="flex flex-col gap-4 p-6">
         <li className = "font-inter text-xl"><Link to="/">Home</Link></li>
         {isLoggedIn && <li className = "font-inter text-xl"><Link to="/myprofile">Profile</Link></li>}
-        {isLoggedIn && <li className = "font-inter text-xl"><Link to="/my-posts">Create</Link></li>}
+        {isLoggedIn && <li className = "font-inter text-xl"><Link to="/createpost">Create</Link></li>}
         {isLoggedIn && <li className = "font-inter text-xl"><Link to="/about">About</Link></li>}
         {isLoggedIn && <li className = "font-inter text-xl"><Link to="/following">Following</Link></li>}
         {isLoggedIn && <li className = "font-inter text-xl"><Link to="/followerspage">Followers</Link></li>}

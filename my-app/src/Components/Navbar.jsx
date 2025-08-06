@@ -15,8 +15,14 @@ import { useSidebar } from '../context/SidebarContext';
 
 
 export default function Navbar() {
-  const [dark, setDark] = useState(false);
+  
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  if (location.pathname === "/chatbot") return null;
+  
   const [menuOpen, setMenuOpen] = useState(false);
+  const [dark, setDark] = useState(false);
   const toggleMenu = () => setMenuOpen(!menuOpen);
   const { toggleSidebar } = useSidebar();
   
@@ -24,6 +30,8 @@ export default function Navbar() {
 
   useEffect(() => {
   const storedTheme = localStorage.getItem('theme');
+
+ 
   if (storedTheme === 'dark') {
     document.documentElement.classList.add('dark');
     setDark(true);
@@ -36,7 +44,7 @@ export default function Navbar() {
     document.documentElement.classList.toggle('dark', newTheme);
     localStorage.setItem('theme', newTheme ? 'dark' : 'light');
   };
-  const location = useLocation()
+  
   const [navLayout, setNavLayout] = useState("default")
  
   useEffect(() => {
@@ -49,7 +57,7 @@ export default function Navbar() {
     }
   })
 
-  const navigate = useNavigate()
+ 
 
   const [hideSearchSection, setHideSearchSection] = useState(false);
 

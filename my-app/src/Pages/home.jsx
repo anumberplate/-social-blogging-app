@@ -1,5 +1,6 @@
-import React from "react"
-import { useLocation } from 'react-router-dom'
+import axios from "axios"
+import React, { useState, useEffect } from "react"
+import { useLocation, Link } from 'react-router-dom'
 import Img1 from "../assets/images/Homepage/img-1.png"
 import Img2 from "../assets/images/Homepage/img-2.png"
 import Img3 from "../assets/images/Homepage/img-3.png"
@@ -7,27 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHeart as faHeartRegular, faComment as faCommentRegular } from '@fortawesome/free-regular-svg-icons'
 import { faShare, faThumbsUp as faThumbsUpSolid } from '@fortawesome/free-solid-svg-icons' 
 
-const posts = [
-  {
-    userprofilephoto: Img1,
-    username: 'NASA',
-    likes: '102',
-    time: '6 hours',
-    replies: '',
-    title: 'NASA discovered a new planet that could save the world',
-    content: 'Nasa asked their experiment on planet and they successfully done it. People loved it very much',
-    commentSection: [
-      {
-        username: 'Everlyne Wanjiku',
-        userPhoto: Img2,
-        content: 'My neighbours will love this!',
-        replies: '',
-        likes: '12',
-        hours: '4'
-      }
-    ]
-  }
-]
+
 
 const hotTopics = [
   {
@@ -43,6 +24,8 @@ const hotTopics = [
     datePosted: "1/8/2025"
   }
 ]
+
+
 
 const explore = [
   {
@@ -66,21 +49,44 @@ const explore = [
 export default function Home() {
   const { pathname } = useLocation()
   const view = pathname.split('/')[2] 
+  const [posts, setPosts] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 6;
+
+  useEffect(() => {
+  const fetchPosts = async () => {
+     try {
+      const res = await axios.get(`/api/posts?page=${currentPage}&limit=${postsPerPage}`);
+      console.log("Fetched posts:", res.data.posts); 
+      setPosts(res.data.posts);
+      setTotalPages(res.data.totalPages);
+    } catch (err) {
+      console.error("Error fetching posts:", err.message);
+    }
+  };
+
+  fetchPosts();
+  }, [currentPage]);
 
   return (
-    <article className="px-6 mt-40 md:mt-64 pt-24 min-h-screen text-lg md:text-2xl bg-[#FAF5F5] dark:bg-[#2C2626] font-martel w-full md:px-32 lg:px-64"> 
+    <article className="px-6 mt-40 md:mt-64 pt-32 min-h-screen text-lg md:text-2xl bg-[#FAF5F5] dark:bg-[#2C2626] font-martel w-full md:px-32 lg:px-72"> 
       {view === "trending" && (
         <>
           <h2 className="font-inter font-bold text-xl md:text-3xl dark:text-white mb-4">Trending</h2>    
-          {posts.map((post, index) => (  
+          {posts?.map((post, index) => (  
             <section key={index} className="bg-[#F9F9F9] dark:bg-[#1e1e1e] text-[0.95rem] md:text-lg rounded-2xl my-6 leading-snug md:w-full">
               <div className="w-full p-0 m-0 ">
                 <div className="overflow-hidden rounded-t-2xl md:mb-6">
-                  <img src={post.userprofilephoto} alt="Post" className="w-full h-full object-cover" />
+                  <img src={post?.userprofilephoto} alt="Post" className="w-full h-full object-cover" />
                 </div>
                 <div className="px-4">
-                  <h3 className="font-bold font-martel mt-4 mb-4 text-[1rem] md:text-[1.2rem] dark:text-white">{post.title}</h3>
-                  <p className="mb-4 text-[0.8rem] md:text-[0.8rem] dark:text-gray-300">{post.content}</p>
+                  <h3 className="font-bold font-martel mt-4 mb-4 text-[1rem] md:text-[1.2rem] dark:text-white">
+                    {post?.title || "Untitled Post"}
+                  </h3>
+                  <p className="mb-4 text-[0.8rem] md:text-[0.8rem] dark:text-gray-300">
+                    {post?.content || "No content available."}
+                  </p>
                   <div className="flex flex-row gap-4 mb-12">
                     <button className="bg-transparent md:text-2xl">
                       <FontAwesomeIcon icon={faHeartRegular} className="cursor-pointer hover:text-red-500" />
@@ -96,29 +102,35 @@ export default function Home() {
               </div>
 
               <div className="flex justify-between items-center px-4 mb-2 font-bold text-[0.8rem] md:text-[1rem] dark:text-white">
-                <h3>{post.likes} Likes</h3>
-                <h2><a href="#">Show Less</a></h2>
+                <h3>{post?.likes ?? 0} Likes</h3>
+                <h2><Link to={`/post/${post._id}`}>Show More</Link></h2>
               </div>
 
               <div className="px-4 py-4 text-[0.7rem]">
                 <ul>
-                  {post.commentSection.map((comment, idx) => (
+                  {post?.commentSection?.map((comment, idx) => (
                     <li key={idx} className="mb-4">
                       <div className="flex flex-row gap-x-6">
                         <div className="flex items-start">
                           <div className="overflow-hidden w-12 h-12 md:w-24 md:h-24 rounded-full">
-                            <img src={comment.userPhoto} alt="User" className="w-full h-full object-cover" />
+                            <img src={comment?.userPhoto} alt="User" className="w-full h-full object-cover" />
                           </div>
                         </div>
                         <div>
-                          <h4 className="font-bold mb-1 text-sm md:text-[1.2rem] dark:text-white">{comment.username}</h4>
-                          <p className="dark:text-gray-300 md:text-[1.2rem]">{comment.content}</p>
+                          <h4 className="font-bold mb-1 text-sm md:text-[1.2rem] dark:text-white">
+                            {comment?.username || "Anonymous"}
+                          </h4>
+                          <p className="dark:text-gray-300 md:text-[1.2rem]">
+                            {comment?.content || "No comment content."}
+                          </p>
                           <div className="flex justify-between text-sm font-bold mt-1">
-                            <p className="text-[0.7rem] md:text-[1.2rem]">{comment.hours} hours ago</p>
-                            <p className="text-[0.7rem] md:text-[1.2rem]">{comment.likes} likes</p>
+                            <p className="text-[0.7rem] md:text-[1.2rem]">{comment?.hours ?? "--"} hours ago</p>
+                            <p className="text-[0.7rem] md:text-[1.2rem]">{comment?.likes ?? 0} likes</p>
                             <button className="hover:underline text-[0.7rem] md:text-[1.2rem]">Reply</button>
                           </div>
-                          {comment.replies && <button className="text-sm text-gray-600 mt-1">View all replies</button>}
+                          {comment?.replies && (
+                            <button className="text-sm text-gray-600 mt-1">View all replies</button>
+                          )}
                         </div>
                         <div className="ml-auto">
                           <button>
@@ -143,8 +155,27 @@ export default function Home() {
               </div>
             </section>
           ))}
+          
+          <div className="flex justify-center gap-2 mt-6">
+            <button 
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(prev => prev - 1)}
+              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300"
+            >
+              Prev
+            </button>
+            <span className="px-4 py-2 text-gray-700 dark:text-white">{currentPage} / {totalPages}</span>
+            <button 
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(prev => prev + 1)}
+              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300"
+            >
+              Next
+            </button>
+          </div>
         </>
       )}
+
 
       {view === "hottopics" && (
         <>

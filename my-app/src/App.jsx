@@ -21,6 +21,7 @@ import ProtectedRoute from "./Components/ProtectedRoute";
 import Layout from "./Layout";
 import Login from "./Pages/login";
 import ChatBot from "./Pages/chatBot"
+import SinglePost from './Components/Singlepost'
 
 export default function App() {
   return (
@@ -40,6 +41,8 @@ export default function App() {
           <Route path="/logout" element={<Logout />} />
           <Route path="/login" element={<Login/>} />
           <Route path="/chatbot" element={<ChatBot/>} />
+          <Route path="/createpost" element={<CreatePost />} />
+          <Route path="/post/:id" element={<SinglePost />} />
 
   
           <Route
