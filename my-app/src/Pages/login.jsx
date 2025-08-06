@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import LogoIcon from '../assets/svg/company-logo';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -39,12 +40,19 @@ export default function Login() {
   };
 
   return (
-    <article className="mt-48 z-200">
-      <h2 className="whitespace-nowrap font-bold text-center text-2xl mb-10">
-        SIGN IN TO YOUR ACCOUNT
-      </h2>
+    <article className="mt-52 text-black dark:text-white">
+      <div className="flex justify-center items-center mb-4">
+        <LogoIcon className="w-12 h-12" />
+      </div>
 
-      <form onSubmit={handleSubmit} className=" flex flex-col px-10 md:px-56">
+      <h2 className="whitespace-nowrap font-bold text-center text-2xl mb-2">
+        Welcome back
+      </h2>
+      <p className="text-center px-16 mb-4 text-gray-700 dark:text-gray-300">
+        We’re excited to have you back, can’t wait to see what you’ve been up to since last logged in.
+      </p>
+
+      <form onSubmit={handleSubmit} className="flex flex-col px-10 md:px-56">
         <fieldset>
           <label htmlFor="email" className="font-bold dark:text-white">
             Email Address
@@ -57,7 +65,7 @@ export default function Login() {
             value={form.email}
             onChange={handleChange}
             style={{ boxShadow: "0 4px 4px 0 #0A8F9A" }}
-            className="pl-4 py-2 pr-4 w-full bg-[#F5F5F5] border-solid rounded-2xl border-2 mb-8"
+            className="pl-4 py-2 pr-4 w-full bg-[#F5F5F5] dark:bg-[#1e1e1e] border-solid rounded-2xl border-2 mb-8 dark:border-[#0A8F9A] dark:placeholder-gray-400"
             autoComplete="email"
             required
           />
@@ -73,7 +81,7 @@ export default function Login() {
             value={form.password}
             onChange={handleChange}
             style={{ boxShadow: "0 4px 4px 0 #0A8F9A" }}
-            className="pl-4 py-2 pr-4 w-full bg-[#F5F5F5] border-solid rounded-2xl border-2 mb-8"
+            className="pl-4 py-2 pr-4 w-full bg-[#F5F5F5] dark:bg-[#1e1e1e] border-solid rounded-2xl border-2 mb-8 dark:border-[#0A8F9A] dark:placeholder-gray-400"
             autoComplete="current-password"
             required
           />
@@ -82,11 +90,11 @@ export default function Login() {
         <div className="flex flex-col content-center">
           <button
             type="submit"
-            className="font-bold mb-3 p-3 px-9 bg-[#0A8F9A] text-black rounded-3xl mx-auto"
+            className="font-bold mb-3 p-3 px-9 bg-[#0A8F9A] text-black dark:text-white rounded-3xl mx-auto"
           >
             SIGN IN
           </button>
-          <p className="text-center">
+          <p className="text-center text-black dark:text-white">
             Don't have an account?{" "}
             <span className="text-[#0A8F9A] cursor-pointer" onClick={() => navigate("/signup")}>
               sign up

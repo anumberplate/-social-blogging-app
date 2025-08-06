@@ -111,12 +111,12 @@ export default function Home() {
                           </div>
                         </div>
                         <div>
-                          <h4 className="font-bold mb-1 text-sm md:text-[0.9rem] dark:text-white">{comment.username}</h4>
-                          <p className="dark:text-gray-300 md:text-[0.9rem]">{comment.content}</p>
+                          <h4 className="font-bold mb-1 text-sm md:text-[1.2rem] dark:text-white">{comment.username}</h4>
+                          <p className="dark:text-gray-300 md:text-[1.2rem]">{comment.content}</p>
                           <div className="flex justify-between text-sm font-bold mt-1">
-                            <p className="text-[0.7rem] md:text-[0.9rem]">{comment.hours} hours ago</p>
-                            <p className="text-[0.7rem] md:text-[0.9rem]">{comment.likes} likes</p>
-                            <button className="hover:underline text-[0.7rem] md:text-xl">Reply</button>
+                            <p className="text-[0.7rem] md:text-[1.2rem]">{comment.hours} hours ago</p>
+                            <p className="text-[0.7rem] md:text-[1.2rem]">{comment.likes} likes</p>
+                            <button className="hover:underline text-[0.7rem] md:text-[1.2rem]">Reply</button>
                           </div>
                           {comment.replies && <button className="text-sm text-gray-600 mt-1">View all replies</button>}
                         </div>

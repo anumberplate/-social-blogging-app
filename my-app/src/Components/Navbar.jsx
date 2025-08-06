@@ -74,7 +74,7 @@ export default function Navbar() {
       <nav className="w-full px-2 py-4 md:px-4 bg-white dark:bg-[#374151] md:py-8 flex items-center justify-between font-inter border-b-4 border-b-[#36C5D1] mb-4 md:mb-16">
         <h1 className="text-xl font-bold whitespace-nowrap md:text-4xl md:pl-4">Creative Corner</h1>
         {/* Icons and theme toggle */}
-        <div className="hidden md:flex flex-row items-center gap-2">  
+        <div className="flex flex-row items-center gap-2">  
             {user ? (
               <div className="flex flex-row items-center">
                 <Link to="/dashboard">
@@ -91,13 +91,13 @@ export default function Navbar() {
             ) : (
               <div className="flex flex-row items-center">
                 <Link to="/signup">
-                  <div className="inline-block mr-14 rounded-lg p-[2px] bg-gradient-to-r from-[#36C5D1] to-[#A82ED3]">
-                    <button className="bg-white dark:bg-[#1e1e1e] text-black dark:text-white rounded-lg px-16 py-2 w-full h-full font-semibold">
+                  <div className="inline-block mr-2 md:mr-14 rounded-lg p-[2px] bg-gradient-to-r from-[#36C5D1] to-[#A82ED3]">
+                    <button className="bg-white dark:bg-[#1e1e1e] text-black dark:text-white rounded-lg px-4 mr-2 md:px-16 py-2 w-full h-full font-semibold">
                       Sign Up
                     </button>
                   </div>
                 </Link>
-                <button onClick={toggleDark} className="text-2xl flex justify-center items-center text-black-500 mr-8 dark:text-white">
+                <button onClick={toggleDark} className="text-2xl flex justify-center items-center text-black-500 mr-2 md:mr-8 dark:text-white">
                   <FontAwesomeIcon icon={faSun} className="block dark:hidden" />
                   <FontAwesomeIcon icon={faMoon} className="hidden dark:block" />
                 </button>

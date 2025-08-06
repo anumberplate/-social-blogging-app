@@ -23,6 +23,8 @@ const Sidebar = () => {
         {isLoggedIn && <li className = "font-inter text-xl"><Link to="/about">About</Link></li>}
         {isLoggedIn && <li className = "font-inter text-xl"><Link to="/following">Following</Link></li>}
         {isLoggedIn && <li className = "font-inter text-xl"><Link to="/followerspage">Followers</Link></li>}
+        {isLoggedIn && <li className = "font-inter text-xl"><Link to="/recentposts">Recent posts</Link></li>}
+        {isLoggedIn && <li className = "font-inter text-xl"><Link to="/chatbot">AI chatbot</Link></li>}
         {isLoggedIn && <li className = "font-inter text-xl"><Link to="/logout">Log out</Link></li>}
       </ul>
       

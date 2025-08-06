@@ -20,6 +20,7 @@ import CreatePost from './Pages/CreatePost';
 import ProtectedRoute from "./Components/ProtectedRoute"; 
 import Layout from "./Layout";
 import Login from "./Pages/login";
+import ChatBot from "./Pages/chatBot"
 
 export default function App() {
   return (
@@ -38,6 +39,7 @@ export default function App() {
           <Route path="/notification" element={<Notifications />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/login" element={<Login/>} />
+          <Route path="/chatbot" element={<ChatBot/>} />
 
   
           <Route

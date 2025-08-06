@@ -48,7 +48,7 @@ export default function Signup() {
 
   return (
     <article className="mt-48">
-      <h2 className="whitespace-nowrap font-bold text-center text-2xl mb-10">
+      <h2 className="whitespace-nowrap font-bold text-center text-2xl mb-10 dark:text-white">
         CREATE YOUR ACCOUNT
       </h2>
 
@@ -126,7 +126,7 @@ export default function Signup() {
           >
             SIGN UP
           </button>
-          <p className="text-center">
+          <p className="text-center text-black dark:text-white">
             Already have an account?{" "}
             <span className="text-[#0A8F9A] cursor-pointer" onClick={() => navigate("/login")}>
               sign in
