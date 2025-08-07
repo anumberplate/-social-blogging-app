@@ -12,5 +12,5 @@ router.delete('/:id', auth, postController.deletePost);        // Delete post
 router.get('/:id', postController.getPostById);                // Get single post 
 router.patch('/:id/like', auth, postController.toggleLike);    // Toggle like
 router.post('/:id/comments', auth, postController.addCommentToPost);
-
+router.patch('/posts/:id/views', incrementViews);
 module.exports = router;
