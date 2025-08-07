@@ -24,7 +24,7 @@ export default function SinglePost() {
         headers: { Authorization: `Bearer ${token}` }
       });
       setPost(res.data);
-      setLiked(res.data.liked); 
+      setLiked(res.data.liked || false); 
     } catch (err) {
       console.error("Error fetching post:", err);
     } finally {
