@@ -11,41 +11,44 @@ exports.getPaginatedPosts = async (req, res) => {
 
   try {
     const posts = await Post.aggregate([
-      { $sort: { createdAt: -1 } },
-      { $skip: skip },
-      { $limit: limit },
-      {
-        $lookup: {
-          from: "users",
-          localField: "author",
-          foreignField: "_id",
-          as: "authorDetails"
-        }
+  { $sort: { createdAt: -1 } },
+  { $skip: skip },
+  { $limit: limit },
+  {
+    $lookup: {
+      from: "users",
+      localField: "author",
+      foreignField: "_id",
+      as: "authorDetails"
+    }
+  },
+  { $unwind: { path: "$authorDetails", preserveNullAndEmptyArrays: true } },
+  {
+    $lookup: {
+      from: "comments",
+      localField: "comments",
+      foreignField: "_id",
+      as: "commentDetails"
+    }
+  },
+  {
+    $addFields: {
+      commentCount: {
+        $size: { $ifNull: ["$commentDetails", []] } // ✅ safe even if no comments
       },
-      { $unwind: { path: "$authorDetails", preserveNullAndEmptyArrays: true } },
-      {
-        $lookup: {
-          from: "comments",
-          localField: "comments",
-          foreignField: "_id",
-          as: "commentDetails"
-        }
-      },
-      {
-        $addFields: {
-          commentCount: { $size: "$commentDetails" },
-          author: "$authorDetails",
-          likesCount: { $size: "$likes" }
-        }
-      },
-      {
-        $project: {
-          commentDetails: 0,
-          authorDetails: 0,
-          likes: 0 // don't expose full likes array
-        }
-      }
-    ]);
+      author: "$authorDetails",
+      likesCount: { $size: { $ifNull: ["$likes", []] } } // just in case
+    }
+  },
+  {
+    $project: {
+      commentDetails: 0,
+      authorDetails: 0,
+      likes: 0
+    }
+  }
+]);
+
 
     const total = await Post.countDocuments();
 
