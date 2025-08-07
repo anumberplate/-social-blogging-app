@@ -18,18 +18,21 @@ export default function SinglePost() {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/posts/${id}`);
-        setPost(res.data);
-      } catch (err) {
-        console.error("Error fetching post:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPost();
-  }, [id]);
+  const fetchPost = async () => {
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/posts/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPost(res.data);
+      setLiked(res.data.liked); 
+    } catch (err) {
+      console.error("Error fetching post:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchPost();
+}, [id]);
 
   const handleLike = async () => {
   if (!token) return;
