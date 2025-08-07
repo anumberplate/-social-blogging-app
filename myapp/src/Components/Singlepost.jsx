@@ -1,6 +1,9 @@
 import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from "react"
 import axios from 'axios'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart as faHeartRegular, faComment as faCommentRegular, faShare } from '@fortawesome/free-regular-svg-icons';
+
 export default function SinglePost() {
   const { id } = useParams();
   const [post, setPost] = useState(null);
