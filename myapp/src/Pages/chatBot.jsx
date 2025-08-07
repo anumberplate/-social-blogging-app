@@ -9,22 +9,20 @@ const FloatingChatbot = () => {
   const toggleChatbot = () => setIsOpen(!isOpen);
 
   const handleSend = async () => {
-    if (!input.trim()) return;
+  if (!input.trim()) return;
 
-    const userMessage = { text: input, sender: "user" };
-    setMessages((prev) => [...prev, userMessage]);
+  const userMessage = input.trim();
+  setMessages((prev) => [...prev, { sender: 'user', text: userMessage }]);
+  setInput("");
 
-    try {
-      const botReply = await sendMessageToBot(input);
-      const botMessage = { text: botReply, sender: "bot" };
-      setMessages((prev) => [...prev, botMessage]);
-    } catch (err) {
-      const errorMessage = { text: "Something went wrong.", sender: "bot" };
-      setMessages((prev) => [...prev, errorMessage]);
-    }
-
-    setInput("");
-  };
+  try {
+    const reply = await sendMessageToBot(userMessage);
+    setMessages((prev) => [...prev, { sender: 'bot', text: reply }]);
+  } catch (error) {
+    console.error("Chatbot error:", error);
+    setMessages((prev) => [...prev, { sender: 'bot', text: "⚠️ Something went wrong." }]);
+  }
+};
 
   return (
     <>
