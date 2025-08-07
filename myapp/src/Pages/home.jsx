@@ -7,10 +7,58 @@ import Img3 from "../assets/images/Homepage/img-3.png";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as faHeartRegular, faComment as faCommentRegular } from '@fortawesome/free-regular-svg-icons';
 import { faShare } from '@fortawesome/free-solid-svg-icons';
+const hotTopics = [
+  {
+    title: "React vs Vue",
+    content: "Which one should you pick in 2025?",
+    datePosted: "2 days ago",
+    thumbnail: "https://source.unsplash.com/random/400x200?code",
+  },
+  {
+    title: "AI and Jobs",
+    content: "How AI is reshaping careers.",
+    datePosted: "3 days ago",
+    thumbnail: "https://source.unsplash.com/random/400x200?ai",
+  },
+  {
+    title: "Dark Mode UX",
+    content: "The psychology of dark UI design.",
+    datePosted: "5 days ago",
+    thumbnail: "https://source.unsplash.com/random/400x200?design",
+  },
+];
+
+const explore = [
+  {
+    image: "https://source.unsplash.com/random/400x200?art",
+    content: "Discover the future of abstract art and how digital tools are reshaping creativity.",
+  },
+  {
+    image: "https://source.unsplash.com/random/400x200?poetry",
+    content: "Exploring the power of modern poetry to express emotion and identity.",
+  },
+  {
+    image: "https://source.unsplash.com/random/400x200?photography",
+    content: "A glimpse into the lives of street photographers capturing moments that matter.",
+  },
+  {
+    image: "https://source.unsplash.com/random/400x200?nature",
+    content: "Nature photography is evolving with AI—see how artists are adapting.",
+  },
+  {
+    image: "https://source.unsplash.com/random/400x200?technology",
+    content: "How emerging tech is inspiring a new wave of multimedia art.",
+  },
+  {
+    image: "https://source.unsplash.com/random/400x200?culture",
+    content: "Cultural storytelling through digital art—breaking boundaries and building bridges.",
+  },
+];
 
 export default function Home() {
   const { pathname } = useLocation();
   const view = pathname.split('/')[2];
+  const [commentInputs, setCommentInputs] = useState({});
   const [posts, setPosts] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
@@ -44,6 +92,21 @@ export default function Home() {
       console.error("Failed to like post", err);
     }
   };
+  const handleAddComment = async (postId) => {
+  const comment = commentInputs[postId];
+  if (!comment?.trim()) return;
+
+  try {
+    await axios.post(`${BASE_URL}/api/posts/${postId}/comments`, { text: comment });
+    setCommentInputs(prev => ({ ...prev, [postId]: "" }));
+    setCurrentPage(currentPage); // re-fetch posts
+  } catch (err) {
+    console.error("Failed to add comment", err);
+  }
+};
+
+
+  
 
   return (
     <article className="px-6 mt-40 md:mt-64 pt-32 min-h-screen text-lg md:text-2xl bg-[#FAF5F5] dark:bg-[#2C2626] font-martel w-full md:px-32 lg:px-72">
@@ -78,13 +141,13 @@ export default function Home() {
               </div>
 
               <div className="flex justify-between items-center px-4 mb-2 font-bold text-[0.8rem] md:text-[1rem] dark:text-white">
-                <h3>{post?.likes ?? 0} Likes</h3>
+                <h3>{post?.likesCount ?? 0} Likes</h3>
                 <h2><Link to={`/post/${post._id}`}>Show More</Link></h2>
               </div>
 
               <div className="px-4 py-4 text-[0.7rem]">
                 <ul>
-                  {post?.commentSection?.map((comment, idx) => (
+                  {post?.commentDetails?.map((comment, idx) => (
                     <li key={idx} className="mb-4">
                       <div className="flex flex-row gap-x-6">
                         <div className="flex items-start">
@@ -124,10 +187,13 @@ export default function Home() {
                   type="text" 
                   placeholder="Add a comment..." 
                   name="comment"
+                  onChange={(e) =>
+                      setCommentInputs(prev => ({ ...prev, [post._id]: e.target.value }))
+                    }
                   id="comment"
                   className="w-full px-4 py-2 bg-white dark:bg-[#2a2a2a] dark:text-white"
                 />
-                <button className="absolute right-4 top-1/4 bg-transparent text-gray-500">Post</button>
+                <button  onClick={() => handleAddComment(post._id)} className="absolute right-4 top-1/4 bg-transparent text-gray-500">Post</button>
               </div>
             </section>
           ))}

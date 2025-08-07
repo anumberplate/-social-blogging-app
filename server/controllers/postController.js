@@ -11,44 +11,54 @@ exports.getPaginatedPosts = async (req, res) => {
 
   try {
     const posts = await Post.aggregate([
-  { $sort: { createdAt: -1 } },
-  { $skip: skip },
-  { $limit: limit },
-  {
-    $lookup: {
-      from: "users",
-      localField: "author",
-      foreignField: "_id",
-      as: "authorDetails"
-    }
-  },
-  { $unwind: { path: "$authorDetails", preserveNullAndEmptyArrays: true } },
-  {
-    $lookup: {
-      from: "comments",
-      localField: "comments",
-      foreignField: "_id",
-      as: "commentDetails"
-    }
-  },
-  {
-    $addFields: {
-      commentCount: {
-        $size: { $ifNull: ["$commentDetails", []] } // ✅ safe even if no comments
-      },
-      author: "$authorDetails",
-      likesCount: { $size: { $ifNull: ["$likes", []] } } // just in case
-    }
-  },
-  {
-    $project: {
-      commentDetails: 0,
-      authorDetails: 0,
-      likes: 0
-    }
-  }
-]);
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
 
+      // Join user details
+      {
+        $lookup: {
+          from: "users",
+          localField: "author",
+          foreignField: "_id",
+          as: "authorDetails"
+        }
+      },
+      { $unwind: { path: "$authorDetails", preserveNullAndEmptyArrays: true } },
+
+      // Join comment details
+      {
+        $lookup: {
+          from: "comments",
+          localField: "comments",
+          foreignField: "_id",
+          as: "commentDetails"
+        }
+      },
+
+      // Add computed fields
+      {
+        $addFields: {
+          commentCount: { $size: { $ifNull: ["$commentDetails", []] } },
+          likesCount: { $size: { $ifNull: ["$likes", []] } },
+
+          // Instead of replacing `author`, add a new `authorInfo`
+          authorInfo: {
+            _id: "$authorDetails._id",
+            username: "$authorDetails.username",
+            profilePhoto: "$authorDetails.profilePhoto"
+          }
+        }
+      },
+
+      // Remove unwanted fields
+      {
+        $project: {
+          authorDetails: 0,
+          likes: 0 // ✅ KEEP commentDetails!
+        }
+      }
+    ]);
 
     const total = await Post.countDocuments();
 
@@ -63,6 +73,7 @@ exports.getPaginatedPosts = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch posts" });
   }
 };
+
 
 //  Create a new post
 exports.createPost = async (req, res) => {
