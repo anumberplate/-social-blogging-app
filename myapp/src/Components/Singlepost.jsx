@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom';
+import React, { useState } from "react"
 export default function SinglePost() {
   const { id } = useParams();
   const [post, setPost] = useState(null);
