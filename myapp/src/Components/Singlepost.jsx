@@ -16,7 +16,7 @@ export default function SinglePost() {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const res = await axios.get(`/api/posts/${id}`);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/posts/${id}`);
         setPost(res.data);
       } catch (err) {
         console.error('Error fetching post:', err);
@@ -34,7 +34,7 @@ export default function SinglePost() {
 
     try {
       const res = await axios.post(
-        `/api/posts/${id}/comments`,
+        `${import.meta.env.VITE_API_URL}/api/posts/${id}/comments`,
         { text: newComment },
         {
           headers: {
