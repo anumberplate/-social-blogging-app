@@ -86,17 +86,20 @@ exports.getPaginatedPosts = async (req, res) => {
   }
 
 };
-
-
+function getRandomImage() {
+  const randomId = Math.floor(Math.random() * 1000);
+  return `https://picsum.photos/seed/${randomId}/800/600`;
+}
 //  Create a new post
 exports.createPost = async (req, res) => {
   try {
-    const { title, content } = req.body;
+    const { title, content, image } = req.body;
     const userId = req.user._id;
 
     const newPost = new Post({
       title,
       content,
+      image: image || getRandomImage(),  // <- Use provided or fallback image
       author: userId,
     });
 
