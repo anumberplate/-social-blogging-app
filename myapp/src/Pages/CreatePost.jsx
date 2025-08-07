@@ -8,6 +8,7 @@ export default function CreatePost() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+
   const handleCreatePost = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
@@ -17,9 +18,10 @@ export default function CreatePost() {
       return;
     }
 
+
     try {
       const res = await axios.post(
-        "/api/posts",
+        `${import.meta.env.VITE_API_URL}/api/posts`,
         { title, content },
         {
           headers: {
@@ -28,7 +30,7 @@ export default function CreatePost() {
         }
       );
 
-      navigate(`/posts/${res.data._id}`); // Redirect to newly created post
+      navigate(`/posts/${res.data._id}`); 
     } catch (err) {
       console.error(err);
       setError("Failed to create post.");
