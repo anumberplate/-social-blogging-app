@@ -8,43 +8,44 @@ exports.getPaginatedPosts = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
-  const rawPosts = await Post.find();
-  console.log("Raw posts:", rawPosts);
+
   try {
     const posts = await Post.aggregate([
-    { $sort: { createdAt: -1 } },
-    { $skip: skip },
-    { $limit: limit },
-    {
-      $lookup: {
-        from: "users",
-        localField: "author",
-        foreignField: "_id",
-        as: "authorDetails"
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+      {
+        $lookup: {
+          from: "users",
+          localField: "author",
+          foreignField: "_id",
+          as: "authorDetails"
+        }
+      },
+      { $unwind: { path: "$authorDetails", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: "comments",
+          localField: "comments",
+          foreignField: "_id",
+          as: "commentDetails"
+        }
+      },
+      {
+        $addFields: {
+          commentCount: { $size: "$commentDetails" },
+          author: "$authorDetails",
+          likesCount: { $size: "$likes" }
+        }
+      },
+      {
+        $project: {
+          commentDetails: 0,
+          authorDetails: 0,
+          likes: 0 // don't expose full likes array
+        }
       }
-    },
-    { $unwind: { path: "$authorDetails", preserveNullAndEmptyArrays: true } },
-    {
-      $lookup: {
-        from: "comments", // 👈 matches the name of your MongoDB collection (usually lowercase plural of model)
-        localField: "comments",
-        foreignField: "_id",
-        as: "commentDetails"
-      }
-    },
-    {
-      $addFields: {
-        commentCount: { $size: "$commentDetails" }
-      }
-    },
-    {
-      $project: {
-        commentDetails: 0, 
-        likes: 0
-      }
-    }
-   ]);
-
+    ]);
 
     const total = await Post.countDocuments();
 
@@ -60,7 +61,7 @@ exports.getPaginatedPosts = async (req, res) => {
   }
 };
 
-// Create post
+//  Create a new post
 exports.createPost = async (req, res) => {
   try {
     const { title, content } = req.body;
@@ -81,7 +82,7 @@ exports.createPost = async (req, res) => {
   }
 };
 
-// Update post
+// Update post (only by author)
 exports.updatePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -102,7 +103,7 @@ exports.updatePost = async (req, res) => {
   }
 };
 
-// Delete post
+//  Delete post (only by author)
 exports.deletePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -118,30 +119,25 @@ exports.deletePost = async (req, res) => {
   }
 };
 
-// Get a single post by ID with populated author and comments
+// Get a single post by ID (+ increment views)
 exports.getPostById = async (req, res) => {
-  const { id } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: "Invalid post ID" });
-  }
-
   try {
     const post = await Post.findByIdAndUpdate(
-      id,
-      { $inc: { views: 1 } },
+      req.params.id,
+      { $inc: { views: 1 } }, // 👈 increment views
       { new: true }
     )
-      .populate("author", "username profilePhoto")
+      .populate('author', 'username profilePhoto')
       .populate({
-        path: "comments",
-        populate: { path: "author", select: "username profilePhoto" }
+        path: 'comments',
+        populate: { path: 'author', select: 'username profilePhoto' }
       });
 
-    if (!post) return res.status(404).json({ message: "Post not found" });
+    if (!post) return res.status(404).json({ message: 'Post not found' });
+
     res.json(post);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to fetch post" });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching post', error });
   }
 };
 
@@ -177,5 +173,28 @@ exports.addCommentToPost = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to add comment" });
+  }
+};
+
+// Toggle like on a post (add/remove)
+exports.toggleLike = async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ message: 'Post not found' });
+
+    const alreadyLiked = post.likes.includes(userId);
+
+    if (alreadyLiked) {
+      post.likes.pull(userId);
+    } else {
+      post.likes.push(userId);
+    }
+
+    await post.save();
+    res.json({ likesCount: post.likes.length, liked: !alreadyLiked });
+  } catch (error) {
+    res.status(500).json({ message: 'Error toggling like', error });
   }
 };

@@ -8,6 +8,7 @@ export default function CreatePost() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+
   const handleCreatePost = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
@@ -16,6 +17,7 @@ export default function CreatePost() {
       alert("You must be logged in to create a post.");
       return;
     }
+
 
     try {
       const res = await axios.post(
