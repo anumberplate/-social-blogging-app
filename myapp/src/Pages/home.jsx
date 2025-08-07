@@ -74,7 +74,7 @@ export default function Home() {
 
         // Update views for all visible posts
         res.data.posts.forEach(post => {
-          axios.patch(`${BASE_URL}/api/posts/${post._id}/views`).catch(() => {});
+          axios.put(`${BASE_URL}/api/posts/${post._id}/views`).catch(() => {});
         });
       } catch (err) {
         console.error("Error fetching posts:", err.message);

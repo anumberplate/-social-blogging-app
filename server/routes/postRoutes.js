@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-
+const { incrementViews } = require('../controllers/postController');
 const auth = require('../middleware/authMiddleware');
 const postController = require('../controllers/postController');
 

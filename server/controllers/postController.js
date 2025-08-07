@@ -167,6 +167,21 @@ exports.getPostById = async (req, res) => {
     res.status(500).json({ message: 'Error fetching post', error });
   }
 };
+exports.incrementViews = async (req, res) => {
+  try {
+    const post = await Post.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { views: 1 } },
+      { new: true }
+    );
+
+    if (!post) return res.status(404).json({ message: 'Post not found' });
+
+    res.status(200).json({ message: 'View count incremented', views: post.views });
+  } catch (error) {
+    res.status(500).json({ message: 'Error incrementing views', error });
+  }
+};
 
 // Add a comment to a post
 exports.addCommentToPost = async (req, res) => {
