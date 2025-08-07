@@ -7,7 +7,7 @@ import {
   FaRobot,
   FaPaperPlane,
 } from 'react-icons/fa';
-import { sendMessageToBot } from '${import.meta.env.VITE_API_URL}/api/index';
+import { sendMessageToBot } from '../api/index.js';
 
 export default function ChatBotUI() {
   const [input, setInput] = useState('');
