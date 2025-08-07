@@ -19,7 +19,7 @@ export default function CreatePost() {
 
     try {
       const res = await axios.post(
-        "/api/posts",
+        `${import.meta.env.VITE_API_URL}/api/posts`,
         { title, content },
         {
           headers: {
@@ -28,7 +28,7 @@ export default function CreatePost() {
         }
       );
 
-      navigate(`/posts/${res.data._id}`); // Redirect to newly created post
+      navigate(`/posts/${res.data._id}`); 
     } catch (err) {
       console.error(err);
       setError("Failed to create post.");
