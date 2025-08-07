@@ -57,7 +57,7 @@ export default function Home() {
   useEffect(() => {
   const fetchPosts = async () => {
      try {
-      const res = await axios.get(`/api/posts?page=${currentPage}&limit=${postsPerPage}`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/posts?page=${currentPage}&limit=${postsPerPage}`);
       console.log("Fetched posts:", res.data.posts); 
       setPosts(res.data.posts);
       setTotalPages(res.data.totalPages);
