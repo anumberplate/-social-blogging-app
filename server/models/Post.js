@@ -14,3 +14,6 @@ const postSchema = new mongoose.Schema({
   userprofilephoto: String,
 
 }, { timestamps: true });
+
+
+module.exports = mongoose.model('Post', postSchema); 
