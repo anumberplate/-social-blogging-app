@@ -23,8 +23,11 @@ import Login from "./Pages/login";
 import ChatBot from "./Pages/chatBot"
 import SinglePost from './Components/Singlepost'
 
+
+
 export default function App() {
   return (
+    <>
     <Router>
       <Routes>
         <Route element={<Layout />}>
@@ -40,7 +43,6 @@ export default function App() {
           <Route path="/notification" element={<Notifications />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/login" element={<Login/>} />
-          <Route path="/chatbot" element={<ChatBot/>} />
           <Route path="/createpost" element={<CreatePost />} />
           <Route path="/post/:id" element={<SinglePost />} />
 
@@ -64,5 +66,7 @@ export default function App() {
         </Route>
       </Routes>
     </Router>
+    <ChatBot />
+    </>
   );
 }

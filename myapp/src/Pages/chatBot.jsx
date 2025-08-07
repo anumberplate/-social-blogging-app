@@ -1,143 +1,66 @@
-import React, { useState } from 'react';
-import {
-  FaBars,
-  FaRegCommentDots,
-  FaSearch,
-  FaBook,
-  FaRobot,
-  FaPaperPlane,
-} from 'react-icons/fa';
-import { sendMessageToBot } from '../api/index.js';
+import { useState } from "react";
+import { sendMessageToBot } from "../api";
 
-export default function ChatBotUI() {
-  const [input, setInput] = useState('');
-  const [chat, setChat] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+const FloatingChatbot = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState([]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const toggleChatbot = () => setIsOpen(!isOpen);
+
+  const handleSend = async () => {
     if (!input.trim()) return;
 
-    const userMsg = { sender: 'You', text: input };
-    setChat((prev) => [...prev, userMsg]);
-    setLoading(true);
-    setError('');
+    const userMessage = { text: input, sender: "user" };
+    setMessages((prev) => [...prev, userMessage]);
 
     try {
       const botReply = await sendMessageToBot(input);
-      setChat((prev) => [...prev, { sender: 'Bot', text: botReply }]);
+      const botMessage = { text: botReply, sender: "bot" };
+      setMessages((prev) => [...prev, botMessage]);
     } catch (err) {
-      setError(err.message || 'Something went wrong');
-    } finally {
-      setLoading(false);
-      setInput('');
+      const errorMessage = { text: "Something went wrong.", sender: "bot" };
+      setMessages((prev) => [...prev, errorMessage]);
     }
+
+    setInput("");
   };
 
   return (
-    <div className="flex h-screen w-full bg-white text-black m42t-">
-      {/* Sidebar */}
-      <aside className="w-60 border-r p-4 flex flex-col justify-between">
-        <div>
-          <button className="mb-6">
-            <FaBars />
-          </button>
-          <ul className="space-y-4">
-            <li className="flex items-center gap-2 font-semibold">
-              <FaRegCommentDots /> New chat
-            </li>
-            <li className="flex items-center gap-2">
-              <FaSearch /> Search chats
-            </li>
-            <li className="flex items-center gap-2">
-              <FaBook /> Library
-            </li>
-            <li className="flex items-center gap-2">
-              <FaRobot /> Writer Agent
-            </li>
-          </ul>
+    <>
+      {/* Toggle Button */}
+      <button
+        onClick={toggleChatbot}
+        className="fixed bottom-4 right-4 z-50 p-3 bg-blue-600 text-white rounded-full shadow-md"
+      >
+        {isOpen ? "Close" : "AI Chat"}
+      </button>
 
-          <div className="mt-6">
-            <p className="text-sm font-semibold text-gray-500 mb-2">chats</p>
-            <ul className="text-sm space-y-1 text-gray-700">
-              <li>Process of managing tasks</li>
-              <li>Sleeping routine every day</li>
-              <li>Nature images as profile</li>
-              <li>Averaging number of students</li>
-            </ul>
+      {/* Chat Widget */}
+      {isOpen && (
+        <div className="fixed bottom-16 right-4 w-80 h-96 bg-white dark:bg-gray-900 shadow-lg border rounded-lg flex flex-col z-50">
+          <div className="p-2 font-bold border-b dark:border-gray-700 dark:text-white">AI Chatbot</div>
+          <div className="flex-1 overflow-y-auto p-2 space-y-2">
+            {messages.map((msg, idx) => (
+              <div key={idx} className={`text-sm p-2 rounded-lg max-w-xs ${msg.sender === "user" ? "bg-blue-100 self-end" : "bg-gray-200 self-start"}`}>
+                {msg.text}
+              </div>
+            ))}
+          </div>
+          <div className="p-2 border-t dark:border-gray-700 flex">
+            <input
+              className="flex-1 border px-2 py-1 rounded-l dark:bg-gray-800 dark:text-white"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+              placeholder="Type your message..."
+            />
+            <button onClick={handleSend} className="bg-blue-600 text-white px-3 rounded-r">Send</button>
           </div>
         </div>
-
-        <div className="flex items-center gap-2 text-sm">
-          <img
-            src="https://via.placeholder.com/30"
-            alt="avatar"
-            className="w-6 h-6 rounded-full"
-          />
-          Free
-        </div>
-      </aside>
-
-      {/* Main Chat Area */}
-      <main className="flex-1 flex flex-col justify-between">
-        {/* Header */}
-        <div className="flex justify-between items-center px-4 py-2 border-b">
-          <h2 className="font-semibold text-lg">Writer Agent</h2>
-          <button className="text-sm text-blue-600 font-medium">Share</button>
-        </div>
-
-        {/* Messages */}
-        <div className="p-4 space-y-4 overflow-y-auto flex-1">
-          {chat.map((msg, i) => (
-            <div
-              key={i}
-              className={`text-sm p-3 rounded-2xl max-w-sm ${
-                msg.sender === 'You'
-                  ? 'bg-black text-white self-end ml-auto'
-                  : 'bg-gray-200 text-black self-start'
-              }`}
-            >
-              {msg.text}
-            </div>
-          ))}
-          {loading && (
-            <div className="bg-gray-200 text-sm p-3 rounded-2xl max-w-sm">
-              Bot is typing...
-            </div>
-          )}
-          {error && (
-            <div className="text-red-600 text-sm font-medium">{error}</div>
-          )}
-
-          {/* Dots */}
-          <div className="flex justify-center items-center mt-4">
-            <span className="w-2 h-2 bg-gray-400 rounded-full mx-1"></span>
-            <span className="w-2 h-2 bg-gray-400 rounded-full mx-1"></span>
-            <span className="w-2 h-2 bg-gray-400 rounded-full mx-1"></span>
-          </div>
-        </div>
-
-        {/* Input */}
-        <form
-          onSubmit={handleSubmit}
-          className="flex items-center border-t px-4 py-3"
-        >
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask anything"
-            className="flex-1 border border-gray-300 rounded-full px-4 py-2 outline-none"
-          />
-          <button
-            type="submit"
-            className="ml-2 bg-black text-white p-2 rounded-full"
-          >
-            <FaPaperPlane />
-          </button>
-        </form>
-      </main>
-    </div>
+      )}
+    </>
   );
-}
+};
+
+export default FloatingChatbot;
