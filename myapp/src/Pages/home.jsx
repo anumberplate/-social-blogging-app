@@ -5,6 +5,7 @@ import Img1 from "../assets/images/Homepage/img-1.png";
 import Img2 from "../assets/images/Homepage/img-2.png";
 import Img3 from "../assets/images/Homepage/img-3.png";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faThumbsUp as faThumbsUpSolid } from '@fortawesome/free-solid-svg-icons';
 import { faHeart as faHeartRegular, faComment as faCommentRegular } from '@fortawesome/free-regular-svg-icons';
 import { faShare } from '@fortawesome/free-solid-svg-icons';
 const hotTopics = [
