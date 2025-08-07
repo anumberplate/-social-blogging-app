@@ -9,7 +9,7 @@ export default function Dashboard() {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    axios.get("/api/auth/user", {
+    axios.get(`${import.meta.env.VITE_API_URL}/api/auth/user`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
