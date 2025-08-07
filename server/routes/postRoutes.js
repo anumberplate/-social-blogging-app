@@ -14,4 +14,3 @@ router.patch('/:id/like', auth, postController.toggleLike);    // Toggle like
 router.post('/:id/comments', auth, postController.addComment); // Add comment 
 
 module.exports = router;
-v

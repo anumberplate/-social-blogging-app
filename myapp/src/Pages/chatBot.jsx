@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { sendMessageToBot } from "../api";
+import { sendMessageToBot } from "../api/index";
 
 const FloatingChatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
