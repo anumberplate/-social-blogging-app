@@ -44,7 +44,7 @@ export default function App() {
           <Route path="/logout" element={<Logout />} />
           <Route path="/login" element={<Login/>} />
           <Route path="/createpost" element={<CreatePost />} />
-          <Route path="/post/:id" element={<SinglePost />} />
+          <Route path="/posts/:id" element={<SinglePost />} />
 
   
           <Route
