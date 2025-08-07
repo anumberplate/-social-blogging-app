@@ -1,6 +1,9 @@
-import os 
+# src/ingest.py
 import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from src.social_blogging_app.utils.embedding_store import ingest_documents
 
 if __name__ == "__main__":

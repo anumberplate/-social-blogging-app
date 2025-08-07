@@ -3,7 +3,8 @@ import uvicorn
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from crewai import Crew, Process
-from crewai_tools import SerperDevToolfrom src.social_blogging_app.agents import SocialBloggingAgents
+from crewai_tools import SerperDevTool
+from src.social_blogging_app.agents import SocialBloggingAgents
 from src.social_blogging_app.tools.custom_tool import get_llm, get_current_trends, generate_draft, edit_draft, summarize_post
 from dotenv import load_dotenv
 
@@ -24,10 +25,10 @@ async def generate_blog(request: BlogRequest):
     Generates a social media-ready blog post based on a topic and tone.
     """
     try:
-
+        # Get the LLM instance to pass to the agents and crew
         llm_instance = get_llm()
 
- 
+        # Initialize the agents with the LLM instance
         agents = SocialBloggingAgents(llm=llm_instance)
         trend_hunter = agents.trend_hunter_agent()
         draft_writer = agents.draft_writer_agent()
@@ -53,7 +54,7 @@ async def generate_blog(request: BlogRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred while running the crew: {e}")
 
-# A simple root endpoint to confirm the server is running
+# root endpoint to confirm the server is running
 @app.get("/")
 def read_root():
     return {"message": "Social Blogging AI Agent API is running."}
