@@ -88,7 +88,7 @@ export default function SinglePost() {
           </p>
           <div className="flex flex-row gap-4 mb-4">
             <button onClick={handleLike} className="md:text-2xl">
-              <FontAwesomeIcon icon={faHeartRegular} className="cursor-pointer hover:text-red-500" />
+              <FontAwesomeIcon icon={liked ? faHeartSolid : faHeartRegular}  className="cursor-pointer hover:text-red-500" />
             </button>
             <button className="md:text-2xl">
               <FontAwesomeIcon icon={faCommentRegular} className="cursor-pointer hover:text-blue-500" />
