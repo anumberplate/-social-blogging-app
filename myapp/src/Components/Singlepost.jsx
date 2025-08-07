@@ -10,6 +10,7 @@ import {
 import { faHeart as faHeartSolid } from '@fortawesome/free-solid-svg-icons';
 
 export default function SinglePost() {
+  const [liked, setLiked] = useState(false);
   const { id } = useParams();
   const [post, setPost] = useState(null);
   const [newComment, setNewComment] = useState("");
@@ -31,16 +32,17 @@ export default function SinglePost() {
   }, [id]);
 
   const handleLike = async () => {
-    if (!token) return;
-    try {
-      const res = await axios.patch(`${import.meta.env.VITE_API_URL}/api/posts/${id}/like`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setPost(prev => ({ ...prev, likesCount: res.data.likesCount }));
-    } catch (err) {
-      console.error("Error toggling like:", err);
-    }
-  };
+  if (!token) return;
+  try {
+    const res = await axios.patch(`${import.meta.env.VITE_API_URL}/api/posts/${id}/like`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    setPost(prev => ({ ...prev, likesCount: res.data.likesCount }));
+    setLiked(res.data.liked);
+  } catch (err) {
+    console.error("Error toggling like:", err);
+  }
+};
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
