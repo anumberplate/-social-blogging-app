@@ -11,6 +11,7 @@ exports.getPaginatedPosts = async (req, res) => {
 
   try {
     const posts = await Post.aggregate([
+      // Sort newest first
       { $sort: { createdAt: -1 } },
       { $skip: skip },
       { $limit: limit },
@@ -39,10 +40,20 @@ exports.getPaginatedPosts = async (req, res) => {
       // Add computed fields
       {
         $addFields: {
-          commentCount: { $size: { $ifNull: ["$commentDetails", []] } },
-          likesCount: { $size: { $ifNull: ["$likes", []] } },
-
-          // Instead of replacing `author`, add a new `authorInfo`
+          commentCount: {
+            $cond: {
+              if: { $isArray: "$commentDetails" },
+              then: { $size: "$commentDetails" },
+              else: 0
+            }
+          },
+          likesCount: {
+            $cond: {
+              if: { $isArray: "$likes" },
+              then: { $size: "$likes" },
+              else: 0
+            }
+          },
           authorInfo: {
             _id: "$authorDetails._id",
             username: "$authorDetails.username",
@@ -51,11 +62,12 @@ exports.getPaginatedPosts = async (req, res) => {
         }
       },
 
-      // Remove unwanted fields
+      // Clean output
       {
         $project: {
           authorDetails: 0,
-          likes: 0 // ✅ KEEP commentDetails!
+          likes: 0,            // Remove raw likes array
+          commentDetails: 0    // Optional: also remove comment details if only count needed
         }
       }
     ]);
@@ -69,9 +81,10 @@ exports.getPaginatedPosts = async (req, res) => {
     });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Failed to fetch posts" });
+    console.error("Error fetching posts:", err.message);
+    res.status(500).json({ message: "Failed to fetch posts", error: err.message });
   }
+
 };
 
 
