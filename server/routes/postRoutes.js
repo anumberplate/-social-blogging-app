@@ -1,16 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const { incrementViews } = require('../controllers/postController');
 const auth = require('../middleware/authMiddleware');
-const postController = require('../controllers/postController');
+const {
+  getPaginatedPosts, 
+  createPost, 
+  updatePost, 
+  deletePost, 
+  getPostById, 
+  addCommentToPost
+} = require('../controllers/postController');
 
-// Routes
-router.get('/', postController.getPaginatedPosts);             // Get all posts 
-router.post('/', auth, postController.createPost);             // Create post 
-router.put('/:id', auth, postController.updatePost);           // Update post 
-router.delete('/:id', auth, postController.deletePost);        // Delete post 
-router.get('/:id', postController.getPostById);                // Get single post 
-router.patch('/:id/like', auth, postController.toggleLike);    // Toggle like
-router.post('/:id/comments', auth, postController.addCommentToPost);
-router.patch('/posts/:id/views', incrementViews);
+
+router.get('/', getPaginatedPosts);
+router.post('/', auth, createPost);
+router.put('/:id', auth, updatePost);
+router.delete('/:id', auth, deletePost);
+router.get('/:id', getPostById);
+router.post('/:id/comments', auth, addCommentToPost);
+
+
 module.exports = router;

@@ -1,6 +1,6 @@
 trend_research:
   description: >
-    Analyze the latest trends related to {topic} to identify a compelling blog topic.
+    Analyze the latest trends related to the given {topic} to identify a compelling blog topic.
     The final output must be a detailed research report containing key insights, statistics, and a clear blog post title recommendation.
     Use the Trend Hunter Agent's research tool to find key insights and data points.
   expected_output: >
@@ -32,7 +32,7 @@ content_summarization:
     Create a concise summary and a meta description for the final blog post.
     The summary should be suitable for social media sharing and SEO.
   expected_output: >
-    A summary of the blog post (1-2 sentences) and a meta description (around 160 characters)
-    in a clear, structured format.
+    The summary(Always returned as 'Summary') of the blog post capturing its essence and any key points, a title and a meta description (around 160 characters) and the context from editor as content and the hastags of the trend
+    in a clear, structured format. The title should be at the top, followed by the meta description, and then the summary, followed by the content and hashtags at the end.
   context: [blog_editing]
   agent: summarizer

@@ -1,4 +1,5 @@
 # src/social_blogging_ai/crew.py
+
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from typing import List
@@ -6,9 +7,8 @@ from crewai.agents.agent_builder.base_agent import BaseAgent
 import sys
 import os
 
-# Add path for local imports
+# path for local imports
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-
 
 from utils.llm_factory import get_llm_model_name
 llm_model_name = get_llm_model_name()
@@ -76,7 +76,8 @@ class SocialBloggingAi():
         return Task(
             config=self.tasks_config['content_generation'],
             agent=self.content_writer(),
-            context=[self.trend_research()]
+            context=[self.trend_research()],
+            output_file='draft_blog_post.txt'
         )
 
     @task
@@ -84,7 +85,8 @@ class SocialBloggingAi():
         return Task(
             config=self.tasks_config['blog_editing'],
             agent=self.editor(),
-            context=[self.content_generation()]
+            context=[self.content_generation()],
+            output_file='edited_blog_post.txt'
         )
 
     @task

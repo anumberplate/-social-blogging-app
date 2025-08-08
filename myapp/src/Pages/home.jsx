@@ -1,122 +1,82 @@
-import axios from "axios";
-import React, { useState, useEffect } from "react";
-import { useLocation, Link } from 'react-router-dom';
-import Img1 from "../assets/images/Homepage/img-1.png";
-import Img2 from "../assets/images/Homepage/img-2.png";
-import Img3 from "../assets/images/Homepage/img-3.png";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbsUp as faThumbsUpSolid } from '@fortawesome/free-solid-svg-icons';
-import { faHeart as faHeartRegular, faComment as faCommentRegular } from '@fortawesome/free-regular-svg-icons';
-import { faShare } from '@fortawesome/free-solid-svg-icons';
+import axios from "axios"
+import React, { useState, useEffect } from "react"
+import { useLocation, Link } from 'react-router-dom'
+import Img1 from "../assets/images/Homepage/img-1.png"
+import Img2 from "../assets/images/Homepage/img-2.png"
+import Img3 from "../assets/images/Homepage/img-3.png"
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faHeart as faHeartRegular, faComment as faCommentRegular } from '@fortawesome/free-regular-svg-icons'
+import { faShare, faThumbsUp as faThumbsUpSolid } from '@fortawesome/free-solid-svg-icons' 
+
+
+
 const hotTopics = [
   {
-    title: "React vs Vue",
-    content: "Which one should you pick in 2025?",
-    datePosted: "2 days ago",
-    thumbnail: "https://source.unsplash.com/random/400x200?code",
+    title: "Hot topic on personal growth",
+    thumbnail : Img3,
+    content : "finding one fixed version of myself, but about learning and growing through every experience.",
+    datePosted: "1/8/2025"
   },
   {
-    title: "AI and Jobs",
-    content: "How AI is reshaping careers.",
-    datePosted: "3 days ago",
-    thumbnail: "https://source.unsplash.com/random/400x200?ai",
-  },
-  {
-    title: "Dark Mode UX",
-    content: "The psychology of dark UI design.",
-    datePosted: "5 days ago",
-    thumbnail: "https://source.unsplash.com/random/400x200?design",
-  },
-];
+    title: "Hot topic on personal growth",
+    thumbnail : Img2,
+    content : "finding one fixed version of myself, but about learning and growing through every experience.",
+    datePosted: "1/8/2025"
+  }
+]
+
+
 
 const explore = [
   {
-    image: "https://source.unsplash.com/random/400x200?art",
-    content: "Discover the future of abstract art and how digital tools are reshaping creativity.",
+    content: "Abstract design with geometric shapes",
+    image: Img1
+  }, 
+  {
+    content: "Sunset over ocean with colorful sky",
+    image: Img2
   },
   {
-    image: "https://source.unsplash.com/random/400x200?poetry",
-    content: "Exploring the power of modern poetry to express emotion and identity.",
+    content: "Landscape photo of snowy mountains",
+    image: Img3
   },
   {
-    image: "https://source.unsplash.com/random/400x200?photography",
-    content: "A glimpse into the lives of street photographers capturing moments that matter.",
-  },
-  {
-    image: "https://source.unsplash.com/random/400x200?nature",
-    content: "Nature photography is evolving with AI—see how artists are adapting.",
-  },
-  {
-    image: "https://source.unsplash.com/random/400x200?technology",
-    content: "How emerging tech is inspiring a new wave of multimedia art.",
-  },
-  {
-    image: "https://source.unsplash.com/random/400x200?culture",
-    content: "Cultural storytelling through digital art—breaking boundaries and building bridges.",
-  },
-];
+    content: "Still life painting with fruits in a bowl",
+    image: Img1
+  }
+]
 
 export default function Home() {
-  const { pathname } = useLocation();
-  const view = pathname.split('/')[2];
-  const [commentInputs, setCommentInputs] = useState({});
+  const { pathname } = useLocation()
+  const view = pathname.split('/')[2] 
   const [posts, setPosts] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 6;
-  const BASE_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const res = await axios.get(`${BASE_URL}/api/posts?page=${currentPage}&limit=${postsPerPage}`);
-        setPosts(res.data.posts);
-        setTotalPages(res.data.totalPages);
-
-        // Update views for all visible posts
-        res.data.posts.forEach(post => {
-          axios.put(`${BASE_URL}/api/posts/${post._id}/views`).catch(() => {});
-        });
-      } catch (err) {
-        console.error("Error fetching posts:", err.message);
-      }
-    };
-
-    fetchPosts();
-  }, [currentPage]);
-
-  const handleLike = async (postId) => {
-    try {
-      await axios.patch(`${BASE_URL}/api/posts/${postId}/like`);
-      setPosts(prev => prev.map(p => p._id === postId ? { ...p, likes: (p.likes || 0) + 1 } : p));
+  const fetchPosts = async () => {
+     try {
+      const res = await axios.get(`/api/posts?page=${currentPage}&limit=${postsPerPage}`);
+      console.log("Fetched posts:", res.data.posts); 
+      setPosts(res.data.posts);
+      setTotalPages(res.data.totalPages);
     } catch (err) {
-      console.error("Failed to like post", err);
+      console.error("Error fetching posts:", err.message);
     }
   };
-  const handleAddComment = async (postId) => {
-  const comment = commentInputs[postId];
-  if (!comment?.trim()) return;
 
-  try {
-    await axios.post(`${BASE_URL}/api/posts/${postId}/comments`, { text: comment });
-    setCommentInputs(prev => ({ ...prev, [postId]: "" }));
-    setCurrentPage(currentPage); // re-fetch posts
-  } catch (err) {
-    console.error("Failed to add comment", err);
-  }
-};
-
-
-  
+  fetchPosts();
+  }, [currentPage]);
 
   return (
-    <article className="px-6 mt-40 md:mt-64 pt-32 min-h-screen text-lg md:text-2xl bg-[#FAF5F5] dark:bg-[#2C2626] font-martel w-full md:px-32 lg:px-72">
+    <article className="px-6 mt-40 md:mt-64 pt-32 min-h-screen text-lg md:text-2xl bg-[#FAF5F5] dark:bg-[#2C2626] font-martel w-full md:px-32 lg:px-72"> 
       {view === "trending" && (
         <>
-          <h2 className="font-inter font-bold text-xl md:text-3xl dark:text-white mb-4">Trending</h2>
-          {posts?.map((post, index) => (
+          <h2 className="font-inter font-bold text-xl md:text-3xl dark:text-white mb-4">Trending</h2>    
+          {posts?.map((post, index) => (  
             <section key={index} className="bg-[#F9F9F9] dark:bg-[#1e1e1e] text-[0.95rem] md:text-lg rounded-2xl my-6 leading-snug md:w-full">
-              <div className="w-full p-0 m-0">
+              <div className="w-full p-0 m-0 ">
                 <div className="overflow-hidden rounded-t-2xl md:mb-6">
                   <img src={post?.userprofilephoto} alt="Post" className="w-full h-full object-cover" />
                 </div>
@@ -128,7 +88,7 @@ export default function Home() {
                     {post?.content || "No content available."}
                   </p>
                   <div className="flex flex-row gap-4 mb-12">
-                    <button onClick={() => handleLike(post._id)} className="bg-transparent md:text-2xl">
+                    <button className="bg-transparent md:text-2xl">
                       <FontAwesomeIcon icon={faHeartRegular} className="cursor-pointer hover:text-red-500" />
                     </button>
                     <button className="bg-transparent md:text-2xl">
@@ -142,13 +102,13 @@ export default function Home() {
               </div>
 
               <div className="flex justify-between items-center px-4 mb-2 font-bold text-[0.8rem] md:text-[1rem] dark:text-white">
-                <h3>{post?.likesCount ?? 0} Likes</h3>
+                <h3>{post?.likes ?? 0} Likes</h3>
                 <h2><Link to={`/post/${post._id}`}>Show More</Link></h2>
               </div>
 
               <div className="px-4 py-4 text-[0.7rem]">
                 <ul>
-                  {post?.commentDetails?.map((comment, idx) => (
+                  {post?.commentSection?.map((comment, idx) => (
                     <li key={idx} className="mb-4">
                       <div className="flex flex-row gap-x-6">
                         <div className="flex items-start">
@@ -188,17 +148,14 @@ export default function Home() {
                   type="text" 
                   placeholder="Add a comment..." 
                   name="comment"
-                  onChange={(e) =>
-                      setCommentInputs(prev => ({ ...prev, [post._id]: e.target.value }))
-                    }
                   id="comment"
                   className="w-full px-4 py-2 bg-white dark:bg-[#2a2a2a] dark:text-white"
                 />
-                <button  onClick={() => handleAddComment(post._id)} className="absolute right-4 top-1/4 bg-transparent text-gray-500">Post</button>
+                <button className="absolute right-4 top-1/4 bg-transparent text-gray-500">Post</button>
               </div>
             </section>
           ))}
-
+          
           <div className="flex justify-center gap-2 mt-6">
             <button 
               disabled={currentPage === 1}
@@ -218,6 +175,8 @@ export default function Home() {
           </div>
         </>
       )}
+
+
       {view === "hottopics" && (
         <>
           <h2 className="font-inter font-bold text-xl md:text-3xl dark:text-white mb-6">Hot Topics</h2>
