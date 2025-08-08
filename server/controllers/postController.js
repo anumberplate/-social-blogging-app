@@ -8,69 +8,43 @@ exports.getPaginatedPosts = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
-
+  const rawPosts = await Post.find();
+  console.log("Raw posts:", rawPosts);
   try {
     const posts = await Post.aggregate([
-      // Sort newest first
-      { $sort: { createdAt: -1 } },
-      { $skip: skip },
-      { $limit: limit },
-
-      // Join user details
-      {
-        $lookup: {
-          from: "users",
-          localField: "author",
-          foreignField: "_id",
-          as: "authorDetails"
-        }
-      },
-      { $unwind: { path: "$authorDetails", preserveNullAndEmptyArrays: true } },
-
-      // Join comment details
-      {
-        $lookup: {
-          from: "comments",
-          localField: "comments",
-          foreignField: "_id",
-          as: "commentDetails"
-        }
-      },
-
-      // Add computed fields
-      {
-        $addFields: {
-          commentCount: {
-            $cond: {
-              if: { $isArray: "$commentDetails" },
-              then: { $size: "$commentDetails" },
-              else: 0
-            }
-          },
-          likesCount: {
-            $cond: {
-              if: { $isArray: "$likes" },
-              then: { $size: "$likes" },
-              else: 0
-            }
-          },
-          authorInfo: {
-            _id: "$authorDetails._id",
-            username: "$authorDetails.username",
-            profilePhoto: "$authorDetails.profilePhoto"
-          }
-        }
-      },
-
-      // Clean output
-      {
-        $project: {
-          authorDetails: 0,
-          likes: 0,            // Remove raw likes array
-          commentDetails: 0    // Optional: also remove comment details if only count needed
-        }
+    { $sort: { createdAt: -1 } },
+    { $skip: skip },
+    { $limit: limit },
+    {
+      $lookup: {
+        from: "users",
+        localField: "author",
+        foreignField: "_id",
+        as: "authorDetails"
       }
-    ]);
+    },
+    { $unwind: { path: "$authorDetails", preserveNullAndEmptyArrays: true } },
+    {
+      $lookup: {
+        from: "comments", // 👈 matches the name of your MongoDB collection (usually lowercase plural of model)
+        localField: "comments",
+        foreignField: "_id",
+        as: "commentDetails"
+      }
+    },
+    {
+      $addFields: {
+        commentCount: { $size: "$commentDetails" }
+      }
+    },
+    {
+      $project: {
+        commentDetails: 0, 
+        likes: 0
+      }
+    }
+   ]);
+
 
     const total = await Post.countDocuments();
 
@@ -81,25 +55,20 @@ exports.getPaginatedPosts = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("Error fetching posts:", err.message);
-    res.status(500).json({ message: "Failed to fetch posts", error: err.message });
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch posts" });
   }
-
 };
-function getRandomImage() {
-  const randomId = Math.floor(Math.random() * 1000);
-  return `https://picsum.photos/seed/${randomId}/800/600`;
-}
-//  Create a new post
+
+// Create post
 exports.createPost = async (req, res) => {
   try {
-    const { title, content, image } = req.body;
+    const { title, content } = req.body;
     const userId = req.user._id;
 
     const newPost = new Post({
       title,
       content,
-      image: image || getRandomImage(),  // <- Use provided or fallback image
       author: userId,
     });
 
@@ -112,7 +81,7 @@ exports.createPost = async (req, res) => {
   }
 };
 
-// Update post (only by author)
+// Update post
 exports.updatePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -133,7 +102,7 @@ exports.updatePost = async (req, res) => {
   }
 };
 
-//  Delete post (only by author)
+// Delete post
 exports.deletePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -149,40 +118,30 @@ exports.deletePost = async (req, res) => {
   }
 };
 
-// Get a single post by ID (+ increment views)
+// Get a single post by ID with populated author and comments
 exports.getPostById = async (req, res) => {
-  try {
-    const post = await Post.findByIdAndUpdate(
-      req.params.id,
-      { $inc: { views: 1 } }, // 👈 increment views
-      { new: true }
-    )
-      .populate('author', 'username profilePhoto')
-      .populate({
-        path: 'comments',
-        populate: { path: 'author', select: 'username profilePhoto' }
-      });
-
-    if (!post) return res.status(404).json({ message: 'Post not found' });
-
-    res.json(post);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching post', error });
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid post ID" });
   }
-};
-exports.incrementViews = async (req, res) => {
+
   try {
     const post = await Post.findByIdAndUpdate(
-      req.params.id,
+      id,
       { $inc: { views: 1 } },
       { new: true }
-    );
+    )
+      .populate("author", "username profilePhoto")
+      .populate({
+        path: "comments",
+        populate: { path: "author", select: "username profilePhoto" }
+      });
 
-    if (!post) return res.status(404).json({ message: 'Post not found' });
-
-    res.status(200).json({ message: 'View count incremented', views: post.views });
-  } catch (error) {
-    res.status(500).json({ message: 'Error incrementing views', error });
+    if (!post) return res.status(404).json({ message: "Post not found" });
+    res.json(post);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch post" });
   }
 };
 
@@ -218,28 +177,5 @@ exports.addCommentToPost = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to add comment" });
-  }
-};
-
-// Toggle like on a post (add/remove)
-exports.toggleLike = async (req, res) => {
-  const userId = req.user._id;
-
-  try {
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: 'Post not found' });
-
-    const alreadyLiked = post.likes.includes(userId);
-
-    if (alreadyLiked) {
-      post.likes.pull(userId);
-    } else {
-      post.likes.push(userId);
-    }
-
-    await post.save();
-    res.json({ likesCount: post.likes.length, liked: !alreadyLiked });
-  } catch (error) {
-    res.status(500).json({ message: 'Error toggling like', error });
   }
 };

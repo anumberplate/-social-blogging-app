@@ -1,24 +1,29 @@
+// models/postschema.js
 const mongoose = require('mongoose');
+const { commentSchema } = require('./Comment.js');
+
+
 const postSchema = new mongoose.Schema({
+  userprofilephoto: String,
+  username: String,
   title: String,
   content: String,
-
-  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  views: { type: Number, default: 0 },
-  
-  image: {
-    type: String,
-    default: "", // This will be filled by the controller if empty
+  likes: {
+    type: Number,
+    default: 0
   },
-
-  comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
-  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-
-  // Optional if you're okay duplicating some fields for performance:
-  username: String,
-  userprofilephoto: String,
-
+  time: String, 
+  replies: [String], 
+  comments: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Comment'
+  }],
+  author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
 }, { timestamps: true });
 
+const Post = mongoose.model('Post', postSchema);
 
-module.exports = mongoose.model('Post', postSchema); 
+module.exports = Post;
