@@ -7,6 +7,7 @@ const postRoutes = require('./routes/postRoutes');
 const authRoutes = require('./routes/authRoutes');
 
 const app = express();
+const updateEmptyPostImages = require('./utils/fixImages');
 app.use(cors({
   origin: 'https://social-blogging-app-two.vercel.app', 
 }));
@@ -33,4 +34,9 @@ mongoose.connect(process.env.MONGO_URI, {
 })
 .catch((err) => {
   console.error("MongoDB connection failed:", err.message);
+});
+
+app.get('/api/utils/fix-images', async (req, res) => {
+  await updateEmptyPostImages();
+  res.send("Updated empty post images.");
 });
