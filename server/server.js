@@ -7,9 +7,9 @@ const postRoutes = require('./routes/postRoutes');
 const authRoutes = require('./routes/authRoutes');
 
 const app = express();
-const updateEmptyPostImages = require('./utils/fixImages');
+const updateEmptyPostImages = require('./utils/fixImage');
 app.use(cors({
-  origin: 'https://social-blogging-app-two.vercel.app', 
+  origin: '*', 
 }));
 
 app.use(express.json());
